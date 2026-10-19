@@ -17,7 +17,7 @@ function Guide({ name }: { name: string }) {
     <GlassCard className="p-5 sm:p-6" aria-labelledby="guide-title">
       <div className="flex flex-wrap items-center gap-3">
         <h2 id="guide-title" className="text-2xl font-bold text-mint-100">{data.name}</h2>
-        {data.disease_check ? <Chip tone="good">Disease check</Chip> : <Chip tone="info">Symptom check &amp; care guide</Chip>}
+        {data.disease_check ? <Chip tone="good">Disease check</Chip> : <Chip tone="info">General check &amp; care guide</Chip>}
       </div>
       {care && <p className="mt-1 text-sm text-mint-200/70">{care.group}</p>}
       {care?.note && <p className="mt-3 rounded-xl bg-leaf-400/10 p-3 text-sm text-mint-100/90">{care.note}</p>}
@@ -36,7 +36,7 @@ function Guide({ name }: { name: string }) {
           ))}
         </div>
       )}
-      {care && <p className="mt-3 text-xs text-mint-200/55">General guidance for this type of plant, not a diagnosis.</p>}
+      {care && <p className="mt-3 text-xs text-mint-200/55">General advice for this type of plant - not a diagnosis.</p>}
       {data.coverage_warning && (
         <p className="mt-4 flex gap-2 rounded-xl bg-amber-400/10 p-3 text-sm text-amber-100/90">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />{data.coverage_warning}
@@ -44,7 +44,7 @@ function Guide({ name }: { name: string }) {
       )}
       {data.conditions.length > 0 && (
         <div className="mt-6">
-          <h3 className="font-semibold text-mint-100">Conditions the disease model knows for {data.name}</h3>
+          <h3 className="font-semibold text-mint-100">Problems we can check for on {data.name}</h3>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {data.conditions.map((c) => (
               <li key={c.label}>
@@ -60,8 +60,8 @@ function Guide({ name }: { name: string }) {
       )}
       {!data.disease_check && (
         <p className="mt-6 text-sm text-mint-200/75">
-          There is no plant-specific disease model for {data.name}. An analysis gives a general symptom check (spots,
-          mildew, rust, mottling), pest screening and this care guide.
+          We don&apos;t have a disease check for {data.name}. A plant check describes what the leaves look like (for example
+          spots, a powdery coating, rust-coloured spots or patchy yellowing), looks for insects, and gives you this care guide.
         </p>
       )}
     </GlassCard>
@@ -86,8 +86,8 @@ export default function PlantGuideView({ initialName }: { initialName: string | 
   return (
     <>
       <PageHeader eyebrow="Plant Guide" title="Care guides for 140+ plants">
-        Watering, light, common pests and problems for each plant type. Plants marked <em>Disease check</em> are the 14
-        crops covered by the disease model.
+        Watering, light, common pests and problems for each type of plant. Plants marked <em>Disease check</em> are the 14
+        food crops we can check for specific diseases.
       </PageHeader>
       {error && <ErrorBanner message={error} onRetry={retry} />}
       {loading && <div className="grid gap-4 lg:grid-cols-3"><Skeleton className="h-[70vh]" /><Skeleton className="h-96 lg:col-span-2" /></div>}

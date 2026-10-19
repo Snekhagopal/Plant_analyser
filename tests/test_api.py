@@ -62,7 +62,7 @@ def test_meta_lists_every_selector_plant_and_questionnaire(fake_factory, tmp_pat
     assert m["plants"][-1]["name"] == m["other_option"] == "Other / Not listed"
     assert m["photo_types"] == {"leaf": "Leaf close-up", "whole_plant": "Whole plant"}
     assert len(m["questions"]) == 10 and m["questions"][0]["multiple"] is True
-    assert m["max_upload_mb"] == 10 and m["allowed_extensions"] == ["jpeg", "jpg", "png"]
+    assert m["max_upload_mb"] == 10 and m["allowed_extensions"] == ["jpeg", "jpg", "png", "webp"]
     assert len(m["disease_check_crops"]) == 14
 
 
@@ -144,7 +144,14 @@ def test_missing_plant_name(fake_factory, tmp_path, leaf):
 
 def test_unsupported_file_type(fake_factory, tmp_path, leaf):
     with client_for(fake_factory(), tmp_path) as c:
-        assert "JPG, JPEG or PNG" in assert_error(post(c, leaf, filename="leaf.gif"), 422, "invalid_input")
+        assert "JPG, JPEG, PNG or WebP" in assert_error(post(c, leaf, filename="leaf.gif"), 422, "invalid_input")
+
+
+def test_webp_upload_is_accepted(fake_factory, tmp_path):
+    webp = to_bytes(make_leaf_image(), "WEBP")
+    with client_for(fake_factory({"Tomato___Early_blight": 0.97}), tmp_path) as c:
+        r = post(c, webp, filename="leaf.webp")
+    assert r.status_code == 200 and r.json()["status"] == "likely_match"
 
 
 def test_png_upload_is_accepted(fake_factory, tmp_path):

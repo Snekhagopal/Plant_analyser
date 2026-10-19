@@ -48,7 +48,7 @@ export default function PlantPicker({ options, value, onChange, error }: {
         <span>Plant name <span className="text-rose-300" aria-hidden>*</span></span>
         {selected && (selected.disease_check
           ? <span className="rounded-full bg-leaf-400/15 px-2 py-0.5 text-[10px] font-semibold text-leaf-400">Disease check</span>
-          : <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[10px] font-semibold text-sky-300">Symptom check</span>)}
+          : <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[10px] font-semibold text-sky-300">General check</span>)}
       </label>
       <div className={`flex items-center gap-2 rounded-xl border bg-forest-950/50 px-3 ${error ? "border-rose-300/60" : "border-mint-200/15 focus-within:border-leaf-400/60"}`}>
         <Sprout className="size-5 shrink-0 text-leaf-400" aria-hidden />
@@ -68,7 +68,7 @@ export default function PlantPicker({ options, value, onChange, error }: {
         <ul id={listId} role="listbox"
           className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-mint-200/15 bg-forest-900/95 p-1 shadow-2xl backdrop-blur-xl">
           {filtered.length === 0 && (
-            <li className="px-3 py-2 text-sm text-mint-200/70">No match - &ldquo;{value}&rdquo; will be used as typed (general checks only).</li>
+            <li className="px-3 py-2 text-sm text-mint-200/70">Not in our list - we&apos;ll use &ldquo;{value}&rdquo; and give general advice.</li>
           )}
           {filtered.map((o, i) => (
             <li key={o.name} id={`${id}-opt-${i}`} role="option" aria-selected={o.name === value}

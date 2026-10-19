@@ -34,8 +34,8 @@ export class ApiError extends Error {
 }
 
 export const SERVER_UNREACHABLE =
-  "Can't reach the PlantVision AI server. Make sure the API is running " +
-  "(uvicorn api.main:app --port 8000) and try again.";
+  "We can't connect to PlantVision AI right now. Please make sure the app is running, then try again. " +
+  "(For whoever runs the app: start the backend with uvicorn api.main:app --port 8000.)";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -46,7 +46,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!res.ok) {
     let code = "http_error";
-    let message = `The server returned an error (${res.status}).`;
+    let message = `Something went wrong on our side (error ${res.status}). Please try again.`;
     try {
       const body = (await res.json()) as Partial<S["ErrorResponse"]>;
       if (body.error) code = body.error;

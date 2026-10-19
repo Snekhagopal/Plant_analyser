@@ -33,7 +33,7 @@ export default function Questionnaire({ questions, answers, onChange }: {
         className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm">
         <span className="flex items-center gap-2 text-mint-100">
           <ClipboardList className="size-4 text-leaf-400" aria-hidden />
-          Optional: symptoms and care conditions
+          Optional: tell us more about your plant
           {answered > 0 && <span className="rounded-full bg-leaf-400/15 px-2 text-xs text-leaf-400">{answered} answered</span>}
         </span>
         <ChevronDown className={`size-4 text-mint-200/70 transition ${open ? "rotate-180" : ""}`} aria-hidden />
@@ -41,7 +41,7 @@ export default function Questionnaire({ questions, answers, onChange }: {
       {open && (
         <div id={panel} className="grid gap-4 border-t border-mint-200/10 p-4">
           <p className="text-xs text-mint-200/70">
-            Watering, nutrient and pest advice relies on these answers - a photo cannot show soil moisture or roots.
+            Your answers help with watering, feeding and insect advice - a photo can&apos;t show how wet the soil is or how the roots look.
           </p>
           {questions.map((q) => q.multiple ? (
             <fieldset key={q.field}>

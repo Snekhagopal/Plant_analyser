@@ -13,6 +13,7 @@ export const FILES = {
   tomatoEarlyBlight: path.join(ROOT, "web/public/samples/tomato-early-blight.jpg"),
   potatoLateBlight: path.join(ROOT, "web/public/samples/potato-late-blight.jpg"),
   grayNoise: path.join(ROOT, "web/e2e/fixtures/gray-noise.jpg"),
+  tomatoWebp: path.join(ROOT, "web/e2e/fixtures/tomato-leaf.webp"),
 };
 
 /** Scripted classifier output (see e2e/servers/scripted_api.py). */
@@ -43,8 +44,8 @@ export async function fillAndAnalyze(page: Page, opts: { file?: string; plant?: 
     await page.locator('input[type="file"]').setInputFiles(opts.file);
   }
   if (opts.plant) await choosePlant(page, opts.plant);
-  if (opts.photoType) await page.getByLabel("Photo type").selectOption(opts.photoType);
-  await page.getByRole("button", { name: /Analyze Plant/ }).click();
+  if (opts.photoType) await page.getByLabel("What does your photo show?").selectOption(opts.photoType);
+  await page.getByRole("button", { name: /Check My Plant/ }).click();
 }
 
 export async function choosePlant(page: Page, plant: string) {
@@ -56,9 +57,9 @@ export async function choosePlant(page: Page, plant: string) {
 
 export const results = (page: Page) => page.locator("#results");
 
-/** One of the four assessment tiles (Overall health, Visible symptoms, Pests, Disease). */
+/** One of the four health-summary tiles (Overall health, Visible symptoms, Pests, Disease). */
 export const assessment = (page: Page, title: string) =>
-  results(page).getByRole("list", { name: "Health assessments" }).getByRole("listitem")
+  results(page).getByRole("list", { name: "Health summary" }).getByRole("listitem")
     .filter({ has: page.getByText(title, { exact: true }) });
 
 /** App alerts only (Next.js also renders an empty route announcer with role="alert"). */

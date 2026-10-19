@@ -102,7 +102,7 @@ def analyze_tab(predictor, model_error, catalog, thresholds, history):
     with left:
         uploaded = st.file_uploader(
             "Plant or leaf photo *", type=sorted(config.ALLOWED_EXTENSIONS),
-            help=f"JPG or PNG, up to {config.MAX_UPLOAD_MB} MB. A leaf close-up or the whole plant; for a disease "
+            help=f"JPG, PNG or WebP, up to {config.MAX_UPLOAD_MB} MB. A leaf close-up or the whole plant; for a disease "
                  "check, one affected leaf in daylight, filling the frame, works best.",
         )
         if uploaded is not None:

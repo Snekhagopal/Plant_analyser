@@ -7,11 +7,11 @@ import { BookOpen, Bug, HeartHandshake, History, Info, Leaf, Menu, ScanSearch, S
 import { PRODUCT_NAME, TAGLINE } from "@/lib/brand";
 
 export const NAV = [
-  { href: "/", label: "Analyze", icon: ScanSearch },
-  { href: "/history", label: "History", icon: History },
+  { href: "/", label: "Check a Plant", icon: ScanSearch },
+  { href: "/history", label: "Past Checks", icon: History },
   { href: "/plant-guide", label: "Plant Guide", icon: BookOpen },
   { href: "/care-tips", label: "Care Tips", icon: HeartHandshake },
-  { href: "/disease-library", label: "Disease Library", icon: Bug },
+  { href: "/disease-library", label: "Plant Diseases", icon: Bug },
   { href: "/about", label: "About", icon: Info },
 ];
 
@@ -57,8 +57,8 @@ function SpeciesCard() {
     <div className="glass rounded-2xl p-4">
       <Sprout className="size-7 text-leaf-400" aria-hidden />
       <p className="mt-3 text-2xl font-extrabold text-mint-100">14</p>
-      <p className="text-sm font-semibold text-mint-100">Crops with disease check</p>
-      <p className="mt-1 text-xs text-mint-200/70">Symptom, pest and care guidance for 140+ plants</p>
+      <p className="text-sm font-semibold text-mint-100">Food crops with a disease check</p>
+      <p className="mt-1 text-xs text-mint-200/70">Leaf, insect and care help for 140+ plants</p>
     </div>
   );
 }

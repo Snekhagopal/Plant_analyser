@@ -33,7 +33,7 @@ def load_image(data: bytes, filename: str | None = None) -> Image.Image:
     if filename:
         ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
         if ext not in config.ALLOWED_EXTENSIONS:
-            raise ImageValidationError("Unsupported file type. Please upload a JPG, JPEG or PNG image.")
+            raise ImageValidationError("Unsupported file type. Please upload a JPG, JPEG, PNG or WebP image.")
 
     try:
         with warnings.catch_warnings():
@@ -51,11 +51,11 @@ def load_image(data: bytes, filename: str | None = None) -> Image.Image:
     except (UnidentifiedImageError, OSError, SyntaxError, ValueError,
             Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
         raise ImageValidationError(
-            "The file could not be read as an image. It may be corrupt or not a JPG/PNG."
+            "The file could not be read as an image. It may be corrupt or not a JPG, PNG or WebP image."
         ) from exc
 
     if fmt not in config.ALLOWED_PIL_FORMATS:
-        raise ImageValidationError("Unsupported image format. Please upload a JPG, JPEG or PNG image.")
+        raise ImageValidationError("Unsupported image format. Please upload a JPG, JPEG, PNG or WebP image.")
     if min(width, height) < config.MIN_IMAGE_SIDE:
         raise ImageValidationError(
             f"The image is too small ({width}x{height}). Please upload a photo at least "

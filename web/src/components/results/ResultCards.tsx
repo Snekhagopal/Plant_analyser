@@ -46,27 +46,29 @@ export function HeadlineCards({ r }: { r: R }) {
     return (
       <div className="grid gap-4 md:grid-cols-3">
         <Tile>
-          <TileHead icon={Sprout} title="Prediction" />
+          <TileHead icon={Sprout} title="Most likely problem" />
           <Chip tone={status.tone} className="mt-3">{status.label}</Chip>
           <p className="mt-2 text-xl font-bold text-mint-100">{p.name}</p>
           <p className="text-sm text-mint-200/75">{p.category}{p.cause ? ` (${p.cause})` : ""}</p>
         </Tile>
         <Tile>
-          <TileHead icon={Gauge} title="Model confidence" />
+          <TileHead icon={Gauge} title="How sure is this result?" />
           <div className="mt-2 flex flex-col items-center gap-2 2xl:flex-row 2xl:items-center">
             <ConfidenceRing value={p.score} />
             <p className="text-xs leading-relaxed text-mint-200/75">
-              Calibrated model score for this class - how strongly the model&apos;s output favours it, <strong className="text-mint-100">not</strong> the
-              probability that the diagnosis is correct.
+              How strongly the app leans towards this answer. It is <strong className="text-mint-100">not</strong> the
+              chance that the answer is correct.
             </p>
           </div>
         </Tile>
         <Tile>
-          <TileHead icon={Activity} title="Possible condition" />
+          <TileHead icon={Activity} title="What it might be" />
           <p className="mt-3 text-xl font-bold text-mint-100">{p.name}</p>
-          <p className="text-sm text-mint-200/75">{p.category ?? "Condition"}</p>
-          {r.status !== "likely_match" && (
-            <p className="mt-2 text-xs text-amber-200/90">Not reliable enough to act on yet - confirm with the checks below.</p>
+          <p className="text-sm text-mint-200/75">{p.category ?? "Plant problem"}</p>
+          {r.status === "likely_match" ? (
+            <p className="mt-2 text-xs text-mint-200/70">A likely match, not a confirmed diagnosis.</p>
+          ) : (
+            <p className="mt-2 text-xs text-amber-200/90">Not certain enough to act on yet - check your plant using the steps below first.</p>
           )}
         </Tile>
       </div>
@@ -77,24 +79,24 @@ export function HeadlineCards({ r }: { r: R }) {
     return (
       <div className="grid gap-4 md:grid-cols-3">
         <Tile>
-          <TileHead icon={Eye} title="Visible symptom pattern" />
+          <TileHead icon={Eye} title="What the leaf looks like" />
           <Chip tone={status.tone} className="mt-3">{status.label}</Chip>
           <p className="mt-2 text-lg font-bold text-mint-100">{r.report.symptoms.headline}</p>
-          <p className="text-sm text-mint-200/75">What the leaf looks like - not a disease name.</p>
+          <p className="text-sm text-mint-200/75">A description of the leaf, not the name of a disease.</p>
         </Tile>
         <Tile>
-          <TileHead icon={Gauge} title="Symptom-check score" />
+          <TileHead icon={Gauge} title="How sure is this?" />
           <div className="mt-2 flex flex-col items-center gap-2 2xl:flex-row 2xl:items-center">
             <ConfidenceRing value={s.score} />
             <p className="text-xs leading-relaxed text-mint-200/75">
-              Score of the closest pattern. It is <strong className="text-mint-100">not</strong> the probability that the pattern is correct.
+              How strongly the app leans towards this description. It is <strong className="text-mint-100">not</strong> the chance that it is correct.
             </p>
           </div>
         </Tile>
         <Tile>
           <TileHead icon={ScanSearch} title="Disease check" />
-          <p className="mt-3 text-lg font-bold text-mint-100">No disease model for {r.plant.input}</p>
-          <p className="text-sm text-mint-200/75">Disease checks cover 14 crops. The exact disease cannot be named.</p>
+          <p className="mt-3 text-lg font-bold text-mint-100">No disease check for {r.plant.input}</p>
+          <p className="text-sm text-mint-200/75">Disease checks are available for 14 crops. For other plants we can describe the leaf, but can&apos;t name the exact disease.</p>
         </Tile>
       </div>
     );
@@ -105,10 +107,10 @@ export function HeadlineCards({ r }: { r: R }) {
       <div>
         <Chip tone={status.tone}>{status.label}</Chip>
         {!r.summary.includes(r.message) && <p className="mt-2 text-sm leading-relaxed text-mint-100/90">{r.message}</p>}
-        <p className="mt-2 text-sm text-mint-100/90">No disease or symptom result is shown as reliable for this photo.</p>
+        <p className="mt-2 text-sm text-mint-100/90">We can&apos;t give a reliable result for this photo, so no disease is named.</p>
         {["species_mismatch", "unfamiliar_image", "possible_non_plant"].includes(r.status) && (
           <p className="mt-2 text-sm text-mint-200/75">
-            Tip: one leaf filling most of the frame, in daylight, against a plain background works best.
+            Tip: take a close-up of one leaf in daylight, filling most of the photo, against a plain background.
           </p>
         )}
       </div>
@@ -118,10 +120,16 @@ export function HeadlineCards({ r }: { r: R }) {
 
 const ASSESSMENT_ICONS = { health: HeartPulse, symptoms: Eye, pests: Bug, disease: Activity } as const;
 
+/** Plainer wording for the few backend headlines that mention the "model". */
+const PLAIN_HEADLINES: Record<string, string> = {
+  "No disease model for this plant": "No disease check for this plant",
+  "Photo symptom check not available": "Leaf check not available",
+};
+
 export function AssessmentRow({ r }: { r: R }) {
   const items: Assessment[] = [r.report.health, r.report.symptoms, r.report.pests, r.report.disease];
   return (
-    <ul className="grid gap-3 sm:grid-cols-2" aria-label="Health assessments">
+    <ul className="grid gap-3 sm:grid-cols-2" aria-label="Health summary">
       {items.map((a) => {
         const I = ASSESSMENT_ICONS[a.key as keyof typeof ASSESSMENT_ICONS] ?? Activity;
         const m = stateMeta(a.state);
@@ -133,7 +141,7 @@ export function AssessmentRow({ r }: { r: R }) {
               </span>
               <Chip tone={m.tone}>{m.label}</Chip>
             </div>
-            <p className="mt-1.5 text-sm font-semibold text-mint-100">{a.headline}</p>
+            <p className="mt-1.5 text-sm font-semibold text-mint-100">{PLAIN_HEADLINES[a.headline] ?? a.headline}</p>
             {a.details[0] && <p className="mt-0.5 line-clamp-3 text-xs text-mint-200/70">{a.details[0]}</p>}
           </li>
         );
@@ -175,21 +183,28 @@ function ImagePanel({ title, icon: I, src, alt, children }: { title: string; ico
   );
 }
 
+/** Why there is no highlight map, in plain words (the API's note is written for developers). */
+function noHighlightReason(r: R): string {
+  if (r.symptom?.is_primary) return "Highlight maps are only available for the 14 crops with a disease check.";
+  if (r.prediction) return "We couldn't make the highlight map for this photo.";
+  return "Not shown, because the app couldn't give a reliable result for this photo.";
+}
+
 export function ImagesAndMeaning({ r }: { r: R }) {
-  const label = r.photo_type === "whole_plant" ? "Your Uploaded Plant Photo" : "Your Uploaded Leaf Photo";
+  const label = r.photo_type === "whole_plant" ? "Your Plant Photo" : "Your Leaf Photo";
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <ImagePanel title={label} icon={Camera} src={r.images.photo} alt="Your uploaded photo" />
-      <ImagePanel title="AI Attention Map (Grad-CAM)" icon={ScanSearch} src={r.images.gradcam}
-        alt="Grad-CAM heatmap: warm colours mark regions that most influenced the model's score">
-        {r.images.gradcam_note ?? "No heatmap for this result."}
+      <ImagePanel title="Where the App Looked" icon={ScanSearch} src={r.images.gradcam}
+        alt="Highlight map: warm colours show the parts of the photo that mattered most for this result">
+        {noHighlightReason(r)}
       </ImagePanel>
       <WhatThisMeans r={r} />
       {r.images.gradcam && (
         <p className="text-xs text-mint-200/60 md:col-span-3">
-          Warm colours mark regions that most influenced the model&apos;s score. A heatmap explains what the model looked at;
-          it does not prove the prediction is right.
-          {r.images.leaf_attention !== null && r.images.leaf_attention !== undefined && ` ${pct(r.images.leaf_attention)} of the attention falls on the leaf.`}
+          Red and yellow areas mattered most for this result. This shows where the app looked - it does not prove the
+          result is right.
+          {r.images.leaf_attention !== null && r.images.leaf_attention !== undefined && ` ${pct(r.images.leaf_attention)} of the highlighted area is on the leaf.`}
         </p>
       )}
     </div>
@@ -203,9 +218,9 @@ function WhatThisMeans({ r }: { r: R }) {
     const p = r.prediction;
     body = (
       <>
-        <p><strong className="text-mint-100">{p.name}</strong> is a {p.category?.toLowerCase() ?? "condition"}{p.cause ? `, caused by ${p.cause.charAt(0).toLowerCase()}${p.cause.slice(1)}` : ""}.</p>
+        <p><strong className="text-mint-100">{p.name}</strong> is a {p.category?.toLowerCase() ?? "plant problem"}{p.cause ? `, caused by ${p.cause.charAt(0).toLowerCase()}${p.cause.slice(1)}` : ""}.</p>
         {(p.symptoms ?? []).length > 0 && (
-          <><p className="mt-2 text-mint-100">Typical signs:</p>
+          <><p className="mt-2 text-mint-100">Signs to look for:</p>
             <ul className="mt-1 list-disc space-y-0.5 pl-4">{(p.symptoms ?? []).slice(0, 3).map((s) => <li key={s}>{s}</li>)}</ul></>
         )}
       </>
@@ -219,13 +234,13 @@ function WhatThisMeans({ r }: { r: R }) {
     body = (
       <>
         {s.patterns.length ? <ul className="list-disc space-y-1 pl-4">{described.map((d) => <li key={d}>{d}</li>)}</ul>
-          : <p>The photo check could not single out a clear pattern.</p>}
-        <p className="mt-2">This describes the leaf&apos;s appearance; many causes can produce the same pattern.</p>
+          : <p>The photo check couldn&apos;t find one clear pattern on this leaf.</p>}
+        <p className="mt-2">This only describes how the leaf looks. Many different problems can look the same.</p>
       </>
     );
     link = { href: `/plant-guide?name=${encodeURIComponent(r.plant.input)}`, label: "Care guide" };
   } else {
-    body = <p>No reliable result could be produced for this photo, so nothing is shown as a diagnosis. Follow the steps on the right.</p>;
+    body = <p>The app couldn&apos;t give a reliable result for this photo, so it doesn&apos;t name a problem. Follow the steps on the right.</p>;
   }
   return (
     <Tile>
@@ -245,9 +260,10 @@ export function StatusBanner({ r }: { r: R }) {
   return (
     <div className="glass-tile rounded-2xl p-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Chip tone={m.tone}>{r.status_label}</Chip>
+        <Chip tone={m.tone}>{m.label}</Chip>
         {r.photo_type === "whole_plant" && <Chip tone="info">Whole-plant photo</Chip>}
       </div>
+      {m.help && <p className="mt-2 text-xs text-mint-200/75">{m.help}</p>}
       <p className="mt-2 text-sm leading-relaxed text-mint-100/90"><Bold text={r.summary} /></p>
       {r.warnings.length > 0 && (
         <ul className="mt-3 space-y-1 text-xs text-amber-200/90">

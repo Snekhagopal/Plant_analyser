@@ -6,8 +6,8 @@ test.describe("History", () => {
 
   test("empty state links back to Analyze", async ({ page }) => {
     await page.goto("/history");
-    await expect(page.getByText("No saved analyses yet")).toBeVisible();
-    await page.getByRole("link", { name: /Analyze a plant/ }).click();
+    await expect(page.getByText("No plant checks yet")).toBeVisible();
+    await page.getByRole("link", { name: /Check a plant/ }).click();
     await expect(page).toHaveURL(/\/$/);
   });
 
@@ -17,10 +17,10 @@ test.describe("History", () => {
     await expect(results(page)).toBeVisible();
     await setScenario(request, { symptom: { key: "mildew", p: 0.9 } });
     await fillAndAnalyze(page, { file: FILES.hibiscus, plant: "Hibiscus" });
-    await expect(results(page).getByText("General symptom check (no plant-specific disease model)")).toBeVisible();
+    await expect(results(page).getByText(/don.t have a disease check for this plant/)).toBeVisible();
 
-    await page.getByRole("link", { name: "History" }).click();
-    const list = page.getByRole("region", { name: "Saved analyses" });
+    await page.getByRole("link", { name: "Past Checks" }).click();
+    const list = page.getByRole("region", { name: "Saved checks" });
     const entries = list.getByRole("listitem");
     await expect(entries).toHaveCount(2);
     await expect(entries.first()).toContainText("Hibiscus");
@@ -31,21 +31,21 @@ test.describe("History", () => {
     await expect(page.getByRole("heading", { name: "Tomato" })).toBeVisible();
     await expect(page.getByText(/most likely match for your Tomato is/)).toBeVisible();
     const download = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Download as JSON" }).click();
-    expect((await download).suggestedFilename()).toMatch(/^plant_analysis_\d+\.json$/);
+    await page.getByRole("button", { name: "Save as file" }).click();
+    expect((await download).suggestedFilename()).toMatch(/^plantvision-past-check-\d+\.json$/);
 
-    await page.getByRole("button", { name: "Delete this entry" }).click();
+    await page.getByRole("button", { name: "Delete this check" }).click();
     await page.getByRole("button", { name: "Confirm delete" }).click();
     await expect(entries).toHaveCount(1);
     await expect(entries.first()).toContainText("Hibiscus");
     expect((await (await request.get(`${SCRIPTED_API}/api/history`)).json()).length).toBe(1);
 
-    await page.getByRole("button", { name: "Delete all history…" }).click();
+    await page.getByRole("button", { name: "Delete all past checks…" }).click();
     const deleteAll = page.getByRole("button", { name: "Delete all", exact: true });
     await expect(deleteAll).toBeDisabled();
-    await page.getByLabel(/permanently deletes all 1 saved analyses/).check();
+    await page.getByLabel(/permanently deletes all 1 saved checks/).check();
     await deleteAll.click();
-    await expect(page.getByText("No saved analyses yet")).toBeVisible();
+    await expect(page.getByText("No plant checks yet")).toBeVisible();
   });
 });
 
@@ -55,16 +55,16 @@ test.describe("Plant Guide", () => {
     await page.getByPlaceholder("Search plants…").fill("hibis");
     await page.getByRole("button", { name: "Hibiscus" }).click();
     await expect(page.getByRole("heading", { name: "Hibiscus" })).toBeVisible();
-    await expect(page.getByText("Symptom check & care guide")).toBeVisible();
+    await expect(page.getByText("General check & care guide")).toBeVisible();
     await expect(page.getByText("Watering", { exact: true })).toBeVisible();
-    await expect(page.getByText(/no plant-specific disease model for Hibiscus/)).toBeVisible();
+    await expect(page.getByText(/don.t have a disease check for Hibiscus/)).toBeVisible();
     await expect(page).toHaveURL(/\?name=Hibiscus/);
   });
 
   test("deep link to a supported crop lists its conditions and links to the library", async ({ page }) => {
     await page.goto("/plant-guide?name=Tomato");
     await expect(page.getByRole("heading", { name: "Tomato", level: 2 })).toBeVisible();
-    await expect(page.getByText("Conditions the disease model knows for Tomato")).toBeVisible();
+    await expect(page.getByText("Problems we can check for on Tomato")).toBeVisible();
     await expect(page.locator('a[href^="/disease-library#Tomato___"]')).toHaveCount(10);
     await page.getByRole("link", { name: /Septoria leaf spot/ }).click();
     await expect(page).toHaveURL(/\/disease-library#Tomato___Septoria_leaf_spot/);
@@ -83,10 +83,10 @@ test.describe("Disease Library", () => {
     const all = await (await request.get(`${SCRIPTED_API}/api/conditions`)).json();
     const diseases = all.filter((c: { category: string }) => c.category !== "Healthy");
     await page.goto("/disease-library");
-    await expect(page.getByText(`${diseases.length} of ${all.length} classes`)).toBeVisible();
+    await expect(page.getByText(`Showing ${diseases.length} of ${all.length} entries`)).toBeVisible();
     await expect(page.locator("article")).toHaveCount(diseases.length);
 
-    await page.getByLabel("Include healthy classes").check();
+    await page.getByLabel("Show healthy-leaf entries").check();
     await expect(page.locator("article")).toHaveCount(all.length);
 
     await page.getByLabel("Crop").selectOption("Apple");
@@ -117,12 +117,12 @@ test.describe("About", () => {
     await page.goto("/about");
     await expect(page.getByRole("heading", { name: "How PlantVision AI works" })).toBeVisible();
     const card = (name: string) => page.getByRole("region", { name });
-    await expect(card("Disease model").getByText(pct(about.disease_test.accuracy, 1), { exact: true })).toBeVisible();
-    await expect(card("Pest screen").getByText(pct(about.pest_screen.ip102_hit_rate), { exact: true })).toBeVisible();
-    await expect(card("Symptom check").getByText(pct(about.symptom_check.accuracy_when_clear), { exact: true })).toBeVisible();
+    await expect(card("Disease check").getByText(pct(about.disease_test.accuracy, 1), { exact: true })).toBeVisible();
+    await expect(card("Insect check").getByText(pct(about.pest_screen.ip102_hit_rate), { exact: true })).toBeVisible();
+    await expect(card("Leaf check").getByText(pct(about.symptom_check.accuracy_when_clear), { exact: true })).toBeVisible();
     const status = page.locator('section[aria-labelledby="status"]');
-    await expect(status.getByText("Disease model")).toBeVisible();
-    await expect(status.getByText("Available").first()).toBeVisible();
-    await expect(page.getByText("Not a diagnosis.")).toBeVisible();
+    await expect(status.getByText("Disease check")).toBeVisible();
+    await expect(status.getByText("Working").first()).toBeVisible();
+    await expect(page.getByText("This is not a diagnosis.")).toBeVisible();
   });
 });

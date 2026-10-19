@@ -72,8 +72,8 @@ export default function AnalyzeView() {
     e.preventDefault();
     const plantName = (isOther ? otherName : plant).trim();
     const next: Errors = {
-      file: file ? null : "Please upload a photo of the plant or leaf.",
-      plant: plantName ? null : (isOther ? "Please type the plant's name." : "Please enter or select the plant name - it is required."),
+      file: file ? null : "Please add a photo of your plant or leaf.",
+      plant: plantName ? null : (isOther ? "Please type the plant's name." : "Please choose or type your plant's name."),
     };
     setErrors(next);
     setApiError(null);
@@ -100,7 +100,7 @@ export default function AnalyzeView() {
       {metaError && <ErrorBanner message={metaError} onRetry={retryMeta} />}
 
       <div className="grid gap-5 lg:grid-cols-3">
-        <form onSubmit={submit} noValidate aria-label="Analyze a plant photo"
+        <form onSubmit={submit} noValidate aria-label="Check a plant photo"
           className="glass grid min-w-0 gap-6 rounded-2xl p-5 md:grid-cols-2 lg:col-span-2">
           <div className="min-w-0">
             <div className="mb-4 flex items-start gap-3">
@@ -110,14 +110,14 @@ export default function AnalyzeView() {
             </div>
             <UploadDropzone previewUrl={preview} fileName={file?.name ?? null} onFile={(f) => takeFile(f)} onClear={clearFile}
               error={errors.file} maxMb={maxMb}
-              sampleNote={sample ? `Sample: ${sample.plant} · ${sample.condition} (PlantVillage label)` : null} />
+              sampleNote={sample ? `Example photo: ${sample.plant} · ${sample.condition}` : null} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-4">
             <div className="flex items-start gap-3">
               <StepBadge n={2} />
               <div><h2 className="text-lg font-semibold text-mint-100">Plant Information</h2>
-                <p className="text-sm text-mint-200/70">Select your plant and photo type</p></div>
+                <p className="text-sm text-mint-200/70">Tell us which plant it is</p></div>
             </div>
             {meta ? (
               <>
@@ -125,7 +125,7 @@ export default function AnalyzeView() {
                   <PlantPicker options={meta.plants} value={plant} onChange={(v) => { setPlant(v); setErrors((e) => ({ ...e, plant: null })); }}
                     error={isOther ? null : errors.plant} />
                   <label className="block">
-                    <span className="mb-1.5 block text-sm font-semibold text-mint-100">Photo type</span>
+                    <span className="mb-1.5 block text-sm font-semibold text-mint-100">What does your photo show?</span>
                     <span className="relative block">
                       <select value={photoType} onChange={(e) => setPhotoType(e.target.value as PhotoType)}
                         className="h-11 w-full appearance-none rounded-xl border border-mint-200/15 bg-forest-950/50 px-3 pr-9 text-sm text-mint-100 focus:border-leaf-400/60 focus:outline-none">
@@ -137,7 +137,7 @@ export default function AnalyzeView() {
                 </div>
                 {isOther && (
                   <label className="block">
-                    <span className="mb-1.5 block text-sm font-semibold text-mint-100">Which plant is it? <span className="text-rose-300" aria-hidden>*</span></span>
+                    <span className="mb-1.5 block text-sm font-semibold text-mint-100">Type the plant&apos;s name <span className="text-rose-300" aria-hidden>*</span></span>
                     <input value={otherName} maxLength={80} onChange={(e) => setOtherName(e.target.value)} placeholder="e.g. Peace lily, Basil, Rose"
                       aria-invalid={!!errors.plant}
                       className="h-11 w-full rounded-xl border border-mint-200/15 bg-forest-950/50 px-3 text-sm text-mint-100 placeholder:text-mint-200/40 focus:border-leaf-400/60 focus:outline-none" />
@@ -146,8 +146,9 @@ export default function AnalyzeView() {
                 )}
                 {photoType === "whole_plant" && (
                   <p className="rounded-lg bg-sky-400/10 px-3 py-2 text-xs text-sky-200">
-                    Whole-plant photos are accepted, but the disease model was trained on leaf close-ups, so a disease result
-                    is shown as uncertain at most. For a disease check, upload one affected leaf.
+                    Whole-plant photos are fine for a general check. But the disease check works best on a close-up of one
+                    leaf, so with a whole-plant photo any disease result is only a rough guess. For a disease check, take a
+                    close-up of one affected leaf.
                   </p>
                 )}
                 <Questionnaire questions={meta.questions} answers={answers} onChange={setAnswers} />
@@ -159,7 +160,7 @@ export default function AnalyzeView() {
             {errors.form && <p role="alert" className="rounded-lg bg-rose-500/10 px-3 py-2 text-sm text-rose-200">{errors.form}</p>}
             <button type="submit" disabled={busy || !meta}
               className="mt-auto inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-mint-200 via-leaf-400 to-lime-glow text-base font-bold text-forest-950 shadow-[0_0_28px_rgba(127,220,106,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60">
-              {busy ? <><Loader2 className="size-5 animate-spin" aria-hidden /> Analysing…</> : <><Sparkles className="size-5" aria-hidden /> Analyze Plant <ArrowRight className="size-5" aria-hidden /></>}
+              {busy ? <><Loader2 className="size-5 animate-spin" aria-hidden /> Checking your plant…</> : <><Sparkles className="size-5" aria-hidden /> Check My Plant <ArrowRight className="size-5" aria-hidden /></>}
             </button>
           </div>
         </form>
@@ -172,7 +173,7 @@ export default function AnalyzeView() {
         {busy && (
           <div className="grid gap-5 lg:grid-cols-3">
             <div className="glass flex flex-col gap-4 rounded-2xl p-5 lg:col-span-2">
-              <p className="text-sm text-mint-200/80">Analysing the photo - the first analysis after starting the server can take a few seconds…</p>
+              <p className="text-sm text-mint-200/80">Checking your plant… This usually takes a few seconds (the first check after starting the app can take a little longer).</p>
               <div className="grid gap-4 md:grid-cols-3"><Skeleton className="h-32" /><Skeleton className="h-32" /><Skeleton className="h-32" /></div>
               <div className="grid gap-4 md:grid-cols-3"><Skeleton className="h-48" /><Skeleton className="h-48" /><Skeleton className="h-48" /></div>
             </div>
@@ -182,8 +183,8 @@ export default function AnalyzeView() {
         {!busy && result && <ResultsDashboard result={result.data} analyzedAt={result.at} />}
         {!busy && !result && !apiError && (
           <GlassCard className="p-6 text-center text-sm text-mint-200/70">
-            Results will appear here: overall health, visible symptoms, pests and - for the 14 supported crops - a disease check,
-            with care recommendations.
+            Your results will appear here: overall health, what the leaves look like, any insects, a disease check for 14
+            food crops, and care advice.
           </GlassCard>
         )}
       </div>

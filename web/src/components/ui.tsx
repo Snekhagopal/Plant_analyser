@@ -89,9 +89,10 @@ export function PageHeader({ eyebrow, title, children }: { eyebrow: string; titl
 export function Disclaimer() {
   return (
     <p className="rounded-2xl border border-amber-300/20 bg-amber-400/5 p-4 text-xs leading-relaxed text-amber-100/80">
-      <strong className="text-amber-200">Not a diagnosis.</strong> Image-based results can be wrong, especially for photos
-      unlike the training data. Confirm important findings with a local agricultural extension service, plant clinic or
-      plant pathologist before using any chemical treatment, and always follow product labels and local regulations.
+      <strong className="text-amber-200">This is not a diagnosis.</strong> Results from photos can be wrong, especially when
+      a photo looks different from the photos the app learned from. Before using any chemical product, check with a local
+      plant expert (for example a plant clinic, garden centre or agricultural advice service), and always follow the
+      product label and local rules.
     </p>
   );
 }

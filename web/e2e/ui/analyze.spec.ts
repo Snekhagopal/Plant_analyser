@@ -6,7 +6,7 @@
 import { DEAD_API, FILES, alertWith, assessment, choosePlant, expect, fillAndAnalyze, results, setScenario, test } from "../fixtures";
 
 const SAP_SUCKERS = "small sap-sucking insects (e.g. whiteflies, aphids, mealybugs, scale)";
-const gradcamImage = (page: import("@playwright/test").Page) => results(page).getByRole("img", { name: /Grad-CAM heatmap/ });
+const gradcamImage = (page: import("@playwright/test").Page) => results(page).getByRole("img", { name: /Highlight map/ });
 
 test.beforeEach(async ({ request }) => setScenario(request, {}));   // default: confident tomato early blight
 
@@ -25,7 +25,7 @@ test.describe("Analyze page", () => {
     page.on("request", (r) => { if (r.url().includes("/api/analyze")) analyzeCalls++; });
     await page.goto("/");
     await page.getByRole("button", { name: /Potato leaf labelled late blight/ }).click();
-    await expect(page.getByText("Sample: Potato · Late blight (PlantVillage label)")).toBeVisible();
+    await expect(page.getByText("Example photo: Potato · Late blight")).toBeVisible();
     await expect(page.getByRole("combobox", { name: /Plant name/ })).toHaveValue("Potato");
     await expect(page.getByText("Disease check", { exact: true }).first()).toBeVisible();
     expect(analyzeCalls).toBe(0);
@@ -40,18 +40,18 @@ test.describe("Analyze page", () => {
       await route.continue({ url: route.request().url().replace(DEAD_API, apiTarget) });
     });
     await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
-    await expect(page.getByRole("button", { name: /Analysing/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Checking your plant/ })).toBeVisible();
     await expect(results(page)).toBeVisible();
 
     const r = results(page);
     await expect(r.getByText("Likely match", { exact: true }).first()).toBeVisible();
     await expect(r.getByText("Tomato early blight").first()).toBeVisible();
     await expect(r.getByRole("img", { name: "Score 97%" })).toBeVisible();
-    await expect(r.getByText(/not.*the probability that the diagnosis is correct/).first()).toBeVisible();
+    await expect(r.getByText(/not.*the\s+chance that the answer is correct/).first()).toBeVisible();
     await expect(gradcamImage(page)).toBeVisible();
     await expect(r.getByRole("img", { name: "Your uploaded photo" })).toBeVisible();
 
-    const steps = page.getByRole("heading", { name: "Recommended Next Steps" });
+    const steps = page.getByRole("heading", { name: "Suggested Next Steps" });
     await expect(steps).toBeVisible();
     await expect(page.getByRole("heading", { name: "Care Guide for Tomato" })).toBeVisible();
 
@@ -59,11 +59,11 @@ test.describe("Analyze page", () => {
     await expect(treatment).toHaveAttribute("open", "");
     await expect(treatment).toContainText("A fungicide labelled for tomato early blight on tomato");
     await expect(treatment).toContainText("follow the product label and local regulations");
-    await expect(page.getByText("Visible symptoms (photo check)")).toBeVisible();   // kept separate from the disease
+    await expect(page.getByText("What the leaf looks like (photo check)")).toBeVisible();   // kept separate from the disease
 
     const download = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Download report" }).click();
-    expect((await download).suggestedFilename()).toMatch(/^plantvision-analysis-\d+\.json$/);
+    await page.getByRole("button", { name: "Save results" }).click();
+    expect((await download).suggestedFilename()).toMatch(/^plantvision-check-\d+\.json$/);
   });
 
   test("uncertain prediction is not presented as reliable", async ({ page, request }) => {
@@ -71,8 +71,8 @@ test.describe("Analyze page", () => {
     await page.goto("/");
     await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
     const r = results(page);
-    await expect(r.getByText("Uncertain prediction")).toBeVisible();
-    await expect(r.getByText("Not reliable enough to act on yet", { exact: false })).toBeVisible();
+    await expect(r.getByText(/The app isn.t sure enough to name one problem/)).toBeVisible();
+    await expect(r.getByText(/Not certain enough to act on yet/)).toBeVisible();
     await expect(r.getByText("Likely match", { exact: true })).toHaveCount(0);
     await expect(page.locator("details", { hasText: "Treatment options - only after confirming the cause" })).toBeVisible();
     await expect(page.getByText(/Do not treat for Tomato early blight yet/).first()).toBeVisible();
@@ -98,11 +98,11 @@ test.describe("Analyze page", () => {
     await page.goto("/");
     await fillAndAnalyze(page, { file: FILES.hibiscus, plant: "Hibiscus" });
     const r = results(page);
-    await expect(r.getByText("General symptom check (no plant-specific disease model)")).toBeVisible();
+    await expect(r.getByText(/don.t have a disease check for this plant/)).toBeVisible();
     await expect(r.getByText("Leaf spots or blight + Mosaic, mottling or yellowing").first()).toBeVisible();
-    await expect(r.getByText("No disease model for Hibiscus")).toBeVisible();
+    await expect(r.getByText("No disease check for Hibiscus")).toBeVisible();
     await expect(gradcamImage(page)).toHaveCount(0);
-    await expect(r.getByText("Grad-CAM is only available for the 14 crops")).toBeVisible();
+    await expect(r.getByText("Highlight maps are only available for the 14 crops with a disease check.")).toBeVisible();
     await expect(page.locator("details", { hasText: /^Treatment options/ })).toHaveCount(0);
   });
 
@@ -111,24 +111,24 @@ test.describe("Analyze page", () => {
     await page.goto("/");
     await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
     const r = results(page);
-    await expect(r.getByText("Image may not match the selected plant")).toBeVisible();
+    await expect(r.getByText(/Plant doesn.t match/).first()).toBeVisible();
     await expect(gradcamImage(page)).toHaveCount(0);
-    await expect(r.getByText(/only shown when the model produced a usable prediction/)).toBeVisible();
+    await expect(r.getByText(/Not shown, because the app couldn.t give a reliable result/)).toBeVisible();
 
     await setScenario(request, { weights: { "Tomato___Early_blight": 0.97 }, ood_score: 999 });   // unfamiliar photo
-    await page.getByRole("button", { name: /Analyze Plant/ }).click();
-    await expect(r.getByText("Unfamiliar image - outside what the model knows")).toBeVisible();
+    await page.getByRole("button", { name: /Check My Plant/ }).click();
+    await expect(r.getByText(/Couldn.t recognize this photo/).first()).toBeVisible();
     await expect(gradcamImage(page)).toHaveCount(0);
   });
 
   test("whole-plant photo never gets a confident disease result", async ({ page, request }) => {
     await setScenario(request, { weights: { "Tomato___Early_blight": 0.99 } });
     await page.goto("/");
-    await page.getByLabel("Photo type").selectOption("whole_plant");
-    await expect(page.getByText(/shown as uncertain at most/)).toBeVisible();
+    await page.getByLabel("What does your photo show?").selectOption("whole_plant");
+    await expect(page.getByText(/any disease result is only a rough guess/)).toBeVisible();
     await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
     const r = results(page);
-    await expect(r.getByText("Uncertain prediction")).toBeVisible();
+    await expect(r.getByText(/The app isn.t sure enough to name one problem/)).toBeVisible();
     await expect(r.getByText("Whole-plant photo", { exact: true })).toBeVisible();
     await expect(r.getByText("Likely match", { exact: true })).toHaveCount(0);
     await expect(r.getByText(/upload a close-up of one affected leaf/i).first()).toBeVisible();
@@ -140,29 +140,41 @@ test.describe("Analyze page", () => {
     await page.goto("/");
     await fillAndAnalyze(page, { file: FILES.grayNoise, plant: "Tomato" });
     const r = results(page);
-    await expect(r.getByText("This may not be a plant photo")).toBeVisible();
-    await expect(assessment(page, "Disease")).toContainText("Not assessed");
+    await expect(r.getByText("May not be a plant", { exact: true }).first()).toBeVisible();
+    await expect(assessment(page, "Disease")).toContainText("Not checked");
   });
 
   test("model unavailable and analysis failure are reported without internals", async ({ page, request }) => {
     await setScenario(request, { model: false });
     await page.goto("/");
     await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
-    await expect(results(page).getByText("Disease model unavailable").first()).toBeVisible();
+    await expect(results(page).getByText("Disease check unavailable").first()).toBeVisible();
 
     await setScenario(request, { raises: true });
-    await page.getByRole("button", { name: /Analyze Plant/ }).click();
-    await expect(results(page).getByText("Analysis failed").first()).toBeVisible();
+    await page.getByRole("button", { name: /Check My Plant/ }).click();
+    await expect(results(page).getByText("Something went wrong").first()).toBeVisible();
     await expect(page.getByText(/scripted inference failure|Traceback/)).toHaveCount(0);
   });
+});
+
+test("WebP photos are accepted", async ({ page, request }) => {
+  await setScenario(request, { weights: { "Tomato___Early_blight": 0.97 } });
+  await page.goto("/");
+  await expect(page.getByText(/JPG, PNG or WebP/)).toBeVisible();
+  await fillAndAnalyze(page, { file: FILES.tomatoWebp, plant: "Tomato" });
+  // The file is accepted and analysed; the outcome itself is left to the backend's checks.
+  await expect(page.getByRole("heading", { name: "Your Plant Check Results" })).toBeVisible();
+  await expect(results(page).getByRole("img", { name: "Your uploaded photo" })).toBeVisible();
+  await expect(results(page).getByText("Tomato early blight").first()).toBeVisible();
+  await expect(alertWith(page, /can.t be used|could not be read/)).toHaveCount(0);
 });
 
 test.describe("Validation and errors", () => {
   test("missing photo and plant name", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /Analyze Plant/ }).click();
-    await expect(alertWith(page, "Please upload a photo of the plant or leaf.")).toBeVisible();
-    await expect(alertWith(page, "plant name - it is required")).toBeVisible();
+    await page.getByRole("button", { name: /Check My Plant/ }).click();
+    await expect(alertWith(page, "Please add a photo of your plant or leaf.")).toBeVisible();
+    await expect(alertWith(page, "Please choose or type your plant's name.")).toBeVisible();
     await expect(results(page)).toHaveCount(0);
   });
 
@@ -170,16 +182,16 @@ test.describe("Validation and errors", () => {
     await page.goto("/");
     const input = page.locator('input[type="file"]');
     await input.setInputFiles({ name: "leaf.gif", mimeType: "image/gif", buffer: Buffer.from("GIF89a") });
-    await expect(alertWith(page, "Unsupported file type")).toBeVisible();
+    await expect(alertWith(page, "This type of file can't be used")).toBeVisible();
     await input.setInputFiles({ name: "huge.jpg", mimeType: "image/jpeg", buffer: Buffer.alloc(11 * 1024 * 1024, 0xff) });
-    await expect(alertWith(page, "larger than 10 MB")).toBeVisible();
+    await expect(alertWith(page, "too large (over 10 MB)")).toBeVisible();
   });
 
   test("corrupt image is rejected by the server and shown as a form error", async ({ page }) => {
     await page.goto("/");
     await page.locator('input[type="file"]').setInputFiles({ name: "leaf.jpg", mimeType: "image/jpeg", buffer: Buffer.from("definitely not a jpeg".repeat(50)) });
     await choosePlant(page, "Tomato");
-    await page.getByRole("button", { name: /Analyze Plant/ }).click();
+    await page.getByRole("button", { name: /Check My Plant/ }).click();
     await expect(alertWith(page, "could not be read as an image")).toBeVisible();
     await expect(results(page)).toHaveCount(0);
   });
@@ -198,7 +210,7 @@ test.describe("Validation and errors", () => {
   test("unreachable API: banner with retry, recovers when the API is back", async ({ page, apiTarget }) => {
     await page.route(`${DEAD_API}/api/meta`, (route) => route.abort("connectionrefused"));
     await page.goto("/");
-    await expect(alertWith(page, "Can't reach the PlantVision AI server")).toBeVisible();
+    await expect(alertWith(page, "We can't connect to PlantVision AI")).toBeVisible();
     await page.unroute(`${DEAD_API}/api/meta`);
     await page.route(`${DEAD_API}/api/meta`, (route) => route.continue({ url: route.request().url().replace(DEAD_API, apiTarget) }));
     await page.getByRole("button", { name: "Try again" }).click();

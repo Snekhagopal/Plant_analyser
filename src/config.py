@@ -27,8 +27,8 @@ IMAGENET_MOBILENET_GLOB = "mobilenet_v2-*.pth"
 PEST_CLIP_MODEL = "openai/clip-vit-large-patch14"
 
 # Upload validation
-ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
-ALLOWED_PIL_FORMATS = {"JPEG", "PNG", "MPO"}  # MPO = multi-picture JPEG from phones
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+ALLOWED_PIL_FORMATS = {"JPEG", "PNG", "MPO", "WEBP"}  # MPO = multi-picture JPEG from phones
 MAX_UPLOAD_MB = 10
 MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
 MIN_IMAGE_SIDE = 64

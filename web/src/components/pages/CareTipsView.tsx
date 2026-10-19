@@ -16,9 +16,9 @@ export default function CareTipsView() {
 
   return (
     <>
-      <PageHeader eyebrow="Care Tips" title="Care basics by plant type">
-        General watering, light and pest guidance for each group of plants. For watering problems, remember a photo
-        cannot show soil moisture - check the soil 3-5 cm deep before watering.
+      <PageHeader eyebrow="Care Tips" title="Care Basics by Plant Type">
+        Simple watering, light and pest advice for each type of plant. Tip: before watering, push a finger 3-5 cm into the
+        soil - a photo can&apos;t show whether the soil is dry.
       </PageHeader>
       {error && <ErrorBanner message={error} onRetry={retry} />}
       {loading && <div className="grid gap-4 md:grid-cols-2"><Skeleton className="h-64" /><Skeleton className="h-64" /></div>}

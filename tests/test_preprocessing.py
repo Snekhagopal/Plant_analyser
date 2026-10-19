@@ -1,3 +1,5 @@
+import io
+
 import numpy as np
 import pytest
 from PIL import Image
@@ -17,6 +19,30 @@ def test_png_with_transparency_is_flattened():
     image = load_image(to_bytes(rgba, "PNG"), "leaf.png")
     assert image.mode == "RGB"
     assert image.getpixel((5, 5)) == (255, 255, 255)
+
+
+def test_webp_loads_as_rgb():
+    image = load_image(to_bytes(make_leaf_image(), "WEBP"), "leaf.webp")
+    assert image.mode == "RGB" and image.size == (256, 256)
+
+
+def test_webp_with_transparency_is_flattened():
+    rgba = Image.new("RGBA", (100, 100), (0, 200, 0, 0))
+    buf = io.BytesIO()
+    rgba.save(buf, "WEBP", lossless=True)
+    image = load_image(buf.getvalue(), "leaf.webp")
+    assert image.mode == "RGB" and image.getpixel((5, 5)) == (255, 255, 255)
+
+
+def test_truncated_webp_rejected():
+    data = to_bytes(make_leaf_image(), "WEBP")
+    with pytest.raises(ImageValidationError):
+        load_image(data[: len(data) // 3], "leaf.webp")
+
+
+def test_gif_renamed_to_webp_rejected():
+    with pytest.raises(ImageValidationError, match="Unsupported image format"):
+        load_image(to_bytes(make_leaf_image(), "GIF"), "leaf.webp")
 
 
 @pytest.mark.parametrize("data", [b"", b"not an image at all", b"\xff\xd8\xff\xe0" + b"\x00" * 50])

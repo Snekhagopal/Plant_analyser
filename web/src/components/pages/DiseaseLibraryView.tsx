@@ -33,8 +33,8 @@ function ConditionCard({ c }: { c: LibraryCondition }) {
         <Chip tone={CATEGORY_TONE[c.category] ?? "neutral"}>{c.category}</Chip>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-3">
-        <List title="Typical signs" items={c.symptoms} />
-        <List title="What to inspect" items={c.inspect} />
+        <List title="Signs to look for" items={c.symptoms} />
+        <List title="What to check" items={c.inspect} />
         <List title="Prevention" items={c.prevention} />
       </div>
       {c.escalate && <p className="mt-4 rounded-lg bg-amber-400/10 px-3 py-2 text-sm text-amber-100/90">When to get help: {c.escalate}</p>}
@@ -62,9 +62,9 @@ export default function DiseaseLibraryView() {
 
   return (
     <>
-      <PageHeader eyebrow="Disease Library" title="Conditions the disease model knows">
-        Reference information for the {data ? data.length : 38} classes of the MobileNetV2 disease model across 14 crops:
-        typical signs, what to inspect, prevention and when to get expert help.
+      <PageHeader eyebrow="Plant Diseases" title="Diseases We Can Check For">
+        Information about every problem the disease check can recognise on 14 food crops: the signs to look for, what to
+        check on your plant, how to prevent it and when to ask an expert.
       </PageHeader>
       {error && <ErrorBanner message={error} onRetry={retry} />}
       {loading && <div className="grid gap-4"><Skeleton className="h-40" /><Skeleton className="h-40" /></div>}
@@ -84,14 +84,14 @@ export default function DiseaseLibraryView() {
             </label>
             <label className="flex items-center gap-2 text-sm text-mint-200/85">
               <input type="checkbox" checked={showHealthy} onChange={(e) => setShowHealthy(e.target.checked)} className="accent-lime-400" />
-              Include healthy classes
+              Show healthy-leaf entries
             </label>
           </GlassCard>
-          <p className="mb-3 text-sm text-mint-200/65">{shown.length} of {data.length} classes</p>
+          <p className="mb-3 text-sm text-mint-200/65">Showing {shown.length} of {data.length} entries</p>
           <div className="grid gap-4">{shown.map((c) => <ConditionCard key={c.label} c={c} />)}</div>
           <p className="mt-6 text-xs text-mint-200/55">
-            Reference summaries for orientation; local conditions and registered treatments vary. Confirm diagnoses with a
-            local expert.
+            Short summaries to help you get started. Conditions and allowed treatments differ from place to place, so check
+            with a local plant expert before acting.
           </p>
         </>
       )}

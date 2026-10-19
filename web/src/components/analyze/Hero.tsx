@@ -3,10 +3,10 @@ import { Bug, Flower2, Leaf, ScanEye, ShieldCheck, Sparkles, Sprout } from "luci
 import { HERO_IMAGE } from "@/lib/brand";
 
 const FEATURES = [
-  { icon: Bug, title: "Disease", sub: "Detection" },
-  { icon: ScanEye, title: "Pest", sub: "Screening" },
-  { icon: ShieldCheck, title: "Care", sub: "Guidance" },
-  { icon: Flower2, title: "Grad-CAM", sub: "Explanations" },
+  { icon: Bug, title: "Disease", sub: "Check" },
+  { icon: ScanEye, title: "Insect", sub: "Check" },
+  { icon: ShieldCheck, title: "Care", sub: "Advice" },
+  { icon: Flower2, title: "See What", sub: "Was Checked" },
 ];
 
 export default function Hero() {
@@ -43,8 +43,8 @@ export default function Hero() {
           <span className="text-gradient block">Happier Days</span>
         </h1>
         <p className="mt-4 max-w-xl text-base text-mint-100/90 sm:text-lg">
-          Upload a leaf or whole-plant photo to check its health. Disease checks for 14 crop species, plus visible
-          symptoms, pest screening and care recommendations for 140+ plants.
+          Take a photo of a leaf or your whole plant to check its health. We check for diseases on 14 food crops, and
+          for leaf problems and insects on 140+ plants, with care advice for each.
         </p>
         <ul className="mt-6 grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:gap-8">
           {FEATURES.map(({ icon: I, title, sub }) => (

@@ -16,7 +16,7 @@ export default function SampleLeaves({ activeSlug, onPick, disabled }: {
   const shown = all ? SAMPLE_LEAVES : SAMPLE_LEAVES.slice(0, 5);
   return (
     <GlassCard className="flex h-full min-w-0 flex-col p-5" aria-labelledby="samples-title">
-      <CardTitle id="samples-title" icon={Leaf} title="Sample Leaves" subtitle="Try these real example images"
+      <CardTitle id="samples-title" icon={Leaf} title="Sample Leaves" subtitle="Try a real example photo"
         action={
           <button type="button" onClick={() => setAll((a) => !a)}
             className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-leaf-400 hover:text-lime-glow">
@@ -39,8 +39,8 @@ export default function SampleLeaves({ activeSlug, onPick, disabled }: {
         ))}
       </ul>
       <p className="mt-auto pt-3 text-[11px] leading-snug text-mint-200/55">
-        PlantVillage test images with their dataset labels (not used in training). Picking one fills in the photo and
-        plant; the result comes from the real analysis.
+        Real photos from a public plant-photo collection, labelled with the problem each one shows. The app never saw
+        them while learning. Picking one fills in the form - press Check My Plant to run the real check.
       </p>
     </GlassCard>
   );

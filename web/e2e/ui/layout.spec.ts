@@ -21,13 +21,13 @@ test("navigation matches the screen size", async ({ page, isMobile }) => {
     await expect(menuButton).toBeVisible();
     await menuButton.click();
     const drawer = page.getByRole("dialog", { name: "Menu" });
-    await drawer.getByRole("link", { name: "Disease Library" }).click();
+    await drawer.getByRole("link", { name: "Plant Diseases" }).click();
     await expect(page).toHaveURL(/\/disease-library$/);
     await expect(drawer).toHaveCount(0);
   } else {
     await expect(menuButton).toBeHidden();
     const nav = page.getByRole("navigation", { name: "Main" });
-    await expect(nav.getByRole("link", { name: "Analyze" })).toHaveAttribute("aria-current", "page");
+    await expect(nav.getByRole("link", { name: "Check a Plant" })).toHaveAttribute("aria-current", "page");
     await nav.getByRole("link", { name: "Care Tips" }).click();
     await expect(page).toHaveURL(/\/care-tips$/);
     await expect(nav.getByRole("link", { name: "Care Tips" })).toHaveAttribute("aria-current", "page");
@@ -38,11 +38,11 @@ test("results dashboard fits the screen", async ({ page, request, isMobile }) =>
   await setScenario(request, {});
   await page.goto("/");
   await fillAndAnalyze(page, { file: FILES.tomatoEarlyBlight, plant: "Tomato" });
-  await expect(results(page).getByRole("img", { name: /Grad-CAM heatmap/ })).toBeVisible();
+  await expect(results(page).getByRole("img", { name: /Highlight map/ })).toBeVisible();
   expect(await noHorizontalOverflow(page)).toBe(true);
   // Desktop: results and next steps side by side; mobile: stacked.
-  const resultsBox = await page.getByRole("heading", { name: "Analysis Results" }).boundingBox();
-  const stepsBox = await page.getByRole("heading", { name: "Recommended Next Steps" }).boundingBox();
+  const resultsBox = await page.getByRole("heading", { name: "Your Plant Check Results" }).boundingBox();
+  const stepsBox = await page.getByRole("heading", { name: "Suggested Next Steps" }).boundingBox();
   if (isMobile) expect(stepsBox!.y).toBeGreaterThan(resultsBox!.y + 200);
   else expect(stepsBox!.x).toBeGreaterThan(resultsBox!.x + 500);   // next steps in the right-hand column
 });
