@@ -101,8 +101,8 @@ export default function AnalyzeView() {
 
       <div className="grid gap-5 lg:grid-cols-3">
         <form onSubmit={submit} noValidate aria-label="Analyze a plant photo"
-          className="glass grid gap-6 rounded-2xl p-5 md:grid-cols-2 lg:col-span-2">
-          <div>
+          className="glass grid min-w-0 gap-6 rounded-2xl p-5 md:grid-cols-2 lg:col-span-2">
+          <div className="min-w-0">
             <div className="mb-4 flex items-start gap-3">
               <StepBadge n={1} />
               <div><h2 className="text-lg font-semibold text-mint-100">Upload a Plant Photo</h2>
@@ -113,7 +113,7 @@ export default function AnalyzeView() {
               sampleNote={sample ? `Sample: ${sample.plant} · ${sample.condition} (PlantVillage label)` : null} />
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
             <div className="flex items-start gap-3">
               <StepBadge n={2} />
               <div><h2 className="text-lg font-semibold text-mint-100">Plant Information</h2>
@@ -121,7 +121,7 @@ export default function AnalyzeView() {
             </div>
             {meta ? (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1">
                   <PlantPicker options={meta.plants} value={plant} onChange={(v) => { setPlant(v); setErrors((e) => ({ ...e, plant: null })); }}
                     error={isOther ? null : errors.plant} />
                   <label className="block">
@@ -141,7 +141,7 @@ export default function AnalyzeView() {
                     <input value={otherName} maxLength={80} onChange={(e) => setOtherName(e.target.value)} placeholder="e.g. Peace lily, Basil, Rose"
                       aria-invalid={!!errors.plant}
                       className="h-11 w-full rounded-xl border border-mint-200/15 bg-forest-950/50 px-3 text-sm text-mint-100 placeholder:text-mint-200/40 focus:border-leaf-400/60 focus:outline-none" />
-                    {errors.plant && <span className="mt-1.5 block text-sm text-rose-300">{errors.plant}</span>}
+                    {errors.plant && <span role="alert" className="mt-1.5 block text-sm text-rose-300">{errors.plant}</span>}
                   </label>
                 )}
                 {photoType === "whole_plant" && (

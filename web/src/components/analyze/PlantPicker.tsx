@@ -44,8 +44,11 @@ export default function PlantPicker({ options, value, onChange, error }: {
 
   return (
     <div ref={wrapper} className="relative">
-      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-mint-100">
-        Plant name <span className="text-rose-300" aria-hidden>*</span>
+      <label htmlFor={id} className="mb-1.5 flex items-center justify-between gap-2 text-sm font-semibold text-mint-100">
+        <span>Plant name <span className="text-rose-300" aria-hidden>*</span></span>
+        {selected && (selected.disease_check
+          ? <span className="rounded-full bg-leaf-400/15 px-2 py-0.5 text-[10px] font-semibold text-leaf-400">Disease check</span>
+          : <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[10px] font-semibold text-sky-300">Symptom check</span>)}
       </label>
       <div className={`flex items-center gap-2 rounded-xl border bg-forest-950/50 px-3 ${error ? "border-rose-300/60" : "border-mint-200/15 focus-within:border-leaf-400/60"}`}>
         <Sprout className="size-5 shrink-0 text-leaf-400" aria-hidden />
@@ -56,14 +59,11 @@ export default function PlantPicker({ options, value, onChange, error }: {
           onChange={(e) => { onChange(e.target.value); setTyping(true); setOpen(true); setActive(0); }}
           onFocus={() => setOpen(true)} onKeyDown={onKey}
           className="h-11 w-full bg-transparent text-sm text-mint-100 placeholder:text-mint-200/40 focus:outline-none" />
-        {selected?.disease_check && (
-          <span className="hidden shrink-0 rounded-full bg-leaf-400/15 px-2 py-0.5 text-[10px] font-semibold text-leaf-400 sm:inline">Disease check</span>
-        )}
         <button type="button" tabIndex={-1} aria-label="Show plants" onClick={() => setOpen((o) => !o)}>
           <ChevronDown className="size-4 text-mint-200/70" aria-hidden />
         </button>
       </div>
-      {error && <p className="mt-1.5 text-sm text-rose-300">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 text-sm text-rose-300">{error}</p>}
       {open && (
         <ul id={listId} role="listbox"
           className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-mint-200/15 bg-forest-900/95 p-1 shadow-2xl backdrop-blur-xl">

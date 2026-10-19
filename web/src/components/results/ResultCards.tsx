@@ -53,7 +53,7 @@ export function HeadlineCards({ r }: { r: R }) {
         </Tile>
         <Tile>
           <TileHead icon={Gauge} title="Model confidence" />
-          <div className="mt-2 flex items-center gap-3">
+          <div className="mt-2 flex flex-col items-center gap-2 2xl:flex-row 2xl:items-center">
             <ConfidenceRing value={p.score} />
             <p className="text-xs leading-relaxed text-mint-200/75">
               Calibrated model score for this class - how strongly the model&apos;s output favours it, <strong className="text-mint-100">not</strong> the
@@ -84,7 +84,7 @@ export function HeadlineCards({ r }: { r: R }) {
         </Tile>
         <Tile>
           <TileHead icon={Gauge} title="Symptom-check score" />
-          <div className="mt-2 flex items-center gap-3">
+          <div className="mt-2 flex flex-col items-center gap-2 2xl:flex-row 2xl:items-center">
             <ConfidenceRing value={s.score} />
             <p className="text-xs leading-relaxed text-mint-200/75">
               Score of the closest pattern. It is <strong className="text-mint-100">not</strong> the probability that the pattern is correct.
@@ -104,7 +104,8 @@ export function HeadlineCards({ r }: { r: R }) {
       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-amber-400/15 text-amber-300"><CircleAlert className="size-6" aria-hidden /></span>
       <div>
         <Chip tone={status.tone}>{status.label}</Chip>
-        <p className="mt-2 text-sm leading-relaxed text-mint-100/90">{r.message}</p>
+        {!r.summary.includes(r.message) && <p className="mt-2 text-sm leading-relaxed text-mint-100/90">{r.message}</p>}
+        <p className="mt-2 text-sm text-mint-100/90">No disease or symptom result is shown as reliable for this photo.</p>
         {["species_mismatch", "unfamiliar_image", "possible_non_plant"].includes(r.status) && (
           <p className="mt-2 text-sm text-mint-200/75">
             Tip: one leaf filling most of the frame, in daylight, against a plain background works best.
@@ -120,7 +121,7 @@ const ASSESSMENT_ICONS = { health: HeartPulse, symptoms: Eye, pests: Bug, diseas
 export function AssessmentRow({ r }: { r: R }) {
   const items: Assessment[] = [r.report.health, r.report.symptoms, r.report.pests, r.report.disease];
   return (
-    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Health assessments">
+    <ul className="grid gap-3 sm:grid-cols-2" aria-label="Health assessments">
       {items.map((a) => {
         const I = ASSESSMENT_ICONS[a.key as keyof typeof ASSESSMENT_ICONS] ?? Activity;
         const m = stateMeta(a.state);
@@ -209,10 +210,19 @@ function WhatThisMeans({ r }: { r: R }) {
         )}
       </>
     );
-    link = { href: `/disease-library#${encodeURIComponent(p.label)}`, label: "Learn more" };
+    link = p.category === "Healthy"
+      ? { href: `/plant-guide?name=${encodeURIComponent(r.plant.matched_species ?? r.plant.input)}`, label: "Care guide" }
+      : { href: `/disease-library#${encodeURIComponent(p.label)}`, label: "Learn more" };
   } else if (r.symptom) {
     const s = r.symptom;
-    body = <p>{s.patterns.length ? `${s.name}: ${s.description}` : "The photo check could not single out a clear pattern."} This describes the leaf&apos;s appearance; many causes can produce the same pattern.</p>;
+    const described = r.report.symptoms.details.slice(0, s.patterns.length);   // one description per pattern
+    body = (
+      <>
+        {s.patterns.length ? <ul className="list-disc space-y-1 pl-4">{described.map((d) => <li key={d}>{d}</li>)}</ul>
+          : <p>The photo check could not single out a clear pattern.</p>}
+        <p className="mt-2">This describes the leaf&apos;s appearance; many causes can produce the same pattern.</p>
+      </>
+    );
     link = { href: `/plant-guide?name=${encodeURIComponent(r.plant.input)}`, label: "Care guide" };
   } else {
     body = <p>No reliable result could be produced for this photo, so nothing is shown as a diagnosis. Follow the steps on the right.</p>;

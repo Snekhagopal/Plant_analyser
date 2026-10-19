@@ -15,7 +15,7 @@ export default function SampleLeaves({ activeSlug, onPick, disabled }: {
   const [all, setAll] = useState(false);
   const shown = all ? SAMPLE_LEAVES : SAMPLE_LEAVES.slice(0, 5);
   return (
-    <GlassCard className="flex h-full flex-col p-5" aria-labelledby="samples-title">
+    <GlassCard className="flex h-full min-w-0 flex-col p-5" aria-labelledby="samples-title">
       <CardTitle id="samples-title" icon={Leaf} title="Sample Leaves" subtitle="Try these real example images"
         action={
           <button type="button" onClick={() => setAll((a) => !a)}

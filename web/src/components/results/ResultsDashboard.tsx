@@ -165,7 +165,7 @@ export default function ResultsDashboard({ result: r, analyzedAt }: { result: An
   const actions = r.recommendations.find((s) => s.key === "actions");
   return (
     <div className="grid gap-5 lg:grid-cols-3" id="results">
-      <GlassCard className="flex flex-col gap-4 p-5 lg:col-span-2" aria-labelledby="results-title">
+      <GlassCard className="flex min-w-0 flex-col gap-4 p-5 lg:col-span-2" aria-labelledby="results-title">
         <CardTitle id="results-title" icon={Leaf} title="Analysis Results"
           subtitle="Here's what the analysis found in your plant photo."
           action={
@@ -183,11 +183,11 @@ export default function ResultsDashboard({ result: r, analyzedAt }: { result: An
         <ImagesAndMeaning r={r} />
         {r.history_error && <p className="text-xs text-amber-200">The result could not be saved to history: {r.history_error}</p>}
       </GlassCard>
-      <div className="flex flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-5">
         <NextSteps section={actions} />
         <CareGuideCard plant={r.plant.input} />
       </div>
-      <div className="flex flex-col gap-4 lg:col-span-3">
+      <div className="flex min-w-0 flex-col gap-4 lg:col-span-3">
         <FullReport sections={r.recommendations} />
         <ModelDetails r={r} />
         <Disclaimer />

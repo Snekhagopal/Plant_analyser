@@ -19,8 +19,8 @@ export function IconBubble({ icon: I, className = "" }: { icon: Icon; className?
 export function CardTitle({ icon, title, subtitle, id, action }:
   { icon?: Icon; title: string; subtitle?: ReactNode; id?: string; action?: ReactNode }) {
   return (
-    <div className="flex items-start justify-between gap-3">
-      <div className="flex items-start gap-3">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex min-w-0 items-start gap-3">
         {icon && <IconBubble icon={icon} />}
         <div>
           <h2 id={id} className="text-base font-semibold text-mint-100 sm:text-lg">{title}</h2>

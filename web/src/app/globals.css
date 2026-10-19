@@ -51,13 +51,12 @@
   }
 }
 
-/* Translucent dark-green card with a soft border and shadow. */
+/* Translucent dark-green card with a soft border and shadow. No backdrop blur: over the smooth page
+   gradient it is invisible but costly on long pages (the sidebar and menus keep their own blur). */
 @utility glass {
   background: linear-gradient(160deg, rgba(22, 70, 44, 0.55), rgba(8, 32, 20, 0.62));
   border: 1px solid rgba(160, 235, 180, 0.14);
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
 }
 
 /* Slightly lighter inner tile used inside glass cards. */

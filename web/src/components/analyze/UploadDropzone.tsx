@@ -68,7 +68,7 @@ export default function UploadDropzone({ previewUrl, fileName, onFile, onClear, 
       <input ref={input} id={inputId} type="file" accept={ACCEPT} className="sr-only" aria-describedby={error ? errorId : undefined}
         aria-label="Plant or leaf photo"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
-      {error && <p id={errorId} className="mt-2 text-sm text-rose-300">{error}</p>}
+      {error && <p id={errorId} role="alert" className="mt-2 text-sm text-rose-300">{error}</p>}
     </div>
   );
 }

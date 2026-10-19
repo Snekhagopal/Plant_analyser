@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PlantVision AI — web frontend
 
-## Getting Started
+Next.js (App Router) + TypeScript + Tailwind CSS frontend for the plant-health API in `../api`.
+All analysis results, scores, recommendations and reference data come from the FastAPI backend;
+the frontend never computes or invents a result.
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. API (from the project root, in the Python environment)
+uvicorn api.main:app --port 8000
+
+# 2. Frontend
+cd web
+npm install
+npm run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The browser calls the API directly at `NEXT_PUBLIC_API_BASE` (default `http://localhost:8000`).
+The API allows `http://localhost:3000` via CORS; set `PLANT_API_CORS_ORIGINS` on the API for other origins.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run typecheck      # regenerates route types, then tsc
+npm run build
+PYTHON=~/plant-health-env/bin/python npm run check:api   # frontend types == FastAPI schema
+PYTHON=~/plant-health-env/bin/python npm run gen:api     # regenerate after changing api/schemas.py
+```
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Data |
+|---|---|
+| `/` Analyze | `POST /api/analyze`, `GET /api/meta`, `GET /api/plants/{name}` |
+| `/history` | `GET/DELETE /api/history`, `/api/history/{id}` |
+| `/plant-guide?name=` | `GET /api/meta`, `GET /api/plants/{name}` |
+| `/disease-library` | `GET /api/conditions` |
+| `/care-tips` | `GET /api/care-groups` |
+| `/about` | `GET /api/about`, `GET /api/health` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Assets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Hero photo:** not added yet. The hero uses a CSS gradient; put the generated image in `public/` and set
+  `HERO_IMAGE` in `src/lib/brand.ts`.
+- **Sample leaves** (`public/samples/`): eight PlantVillage *test-split* images (not used in training), chosen by a
+  fixed random draw, from the Hugging Face mirror `geraldmc/plantvillage-full` (declared CC0-1.0). Each is shown with
+  its dataset label; choosing one only fills in the form.

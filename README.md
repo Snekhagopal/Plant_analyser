@@ -66,8 +66,10 @@ python -m src.evaluation.evaluate_symptoms  # optional: re-measure the symptom c
 # 4. Run the app
 streamlit run app.py
 
-# 4b. Or run the HTTP API (used by the upcoming web frontend); docs at http://localhost:8000/docs
+# 4b. Or run the new PlantVision AI web app: the API (docs at http://localhost:8000/docs) ...
 uvicorn api.main:app --port 8000
+#     ... and the Next.js frontend (see web/README.md) at http://localhost:3000
+cd web && npm install && npm run dev
 
 # 5. Run the tests
 python -m pytest
