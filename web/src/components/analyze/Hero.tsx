@@ -12,10 +12,12 @@ const FEATURES = [
 export default function Hero() {
   return (
     <section aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden rounded-3xl border border-mint-200/10 px-6 pb-10 pt-8 sm:px-10 lg:min-h-[340px] lg:pb-14">
+      className="relative isolate overflow-hidden rounded-3xl border border-mint-200/10 px-6 pb-10 pt-8 sm:px-10 lg:min-h-[400px] lg:pb-14">
       {/* Backdrop: the generated hero photo when available, otherwise a botanical gradient. */}
       {HERO_IMAGE ? (
-        <Image src={HERO_IMAGE} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-right" />
+        <Image src={HERO_IMAGE} alt="" fill priority
+          sizes="(min-width: 1024px) calc(100vw - 18rem), 100vw"
+          className="-z-20 object-cover object-[72%_62%]" />
       ) : (
         <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(520px_340px_at_78%_18%,rgba(214,255,150,0.30),transparent_65%),radial-gradient(700px_420px_at_70%_60%,rgba(52,160,90,0.45),transparent_70%),linear-gradient(115deg,#04150c_0%,#0a2d1a_45%,#145a30_75%,#0d3a20_100%)]">
           <Leaf className="absolute right-[18%] top-6 size-48 rotate-12 text-leaf-400/20" />
@@ -23,9 +25,12 @@ export default function Hero() {
           <Sprout className="absolute bottom-0 right-[30%] size-40 text-leaf-500/15" />
         </div>
       )}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-950/90 via-forest-950/55 to-transparent" />
+      {/* Dark-green fade for text contrast: full-width on small screens (text covers the plant),
+          left-to-right on wide screens so the plant stays bright on the right. */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-forest-950/75 md:bg-transparent md:bg-gradient-to-r md:from-forest-950/95 md:via-forest-950/75 md:via-50% md:to-transparent md:to-80% xl:via-forest-950/65 xl:via-40% xl:to-70%" />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-forest-950/70 to-transparent" />
 
-      <p className="hidden rotate-[-8deg] font-script text-3xl leading-tight text-mint-100/85 xl:absolute xl:right-10 xl:top-14 xl:block">
+      <p className="hidden rotate-[-8deg] font-script text-3xl leading-tight text-mint-100/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.7)] xl:absolute xl:right-10 xl:top-14 xl:block">
         Green Plants<br />Brighter Tomorrows
       </p>
 
