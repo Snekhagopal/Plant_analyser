@@ -95,6 +95,8 @@ def assess_nutrients(ctx: CareContext) -> Assessment | None:
         "natural ageing of lower leaves and nutrient shortages can all look similar.",
         "Do not add fertiliser based on leaf colour alone. A soil test (or tissue test) is the reliable way to "
         "confirm a deficiency; local extension services often offer these.",
+        "If a soil test confirms a deficiency, choose a fertiliser that supplies that nutrient and follow the "
+        "label rate - extra fertiliser does not help and can burn roots.",
     ]
     if ctx.affected_leaves == "Older / lower leaves first":
         reasons.append("Symptoms start on older leaves - consistent with mobile nutrients (e.g. nitrogen, "

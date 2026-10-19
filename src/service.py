@@ -11,11 +11,12 @@ from dataclasses import dataclass
 
 from src.database.history import HistoryError, HistoryStore
 from src.explainability.gradcam import GradCamResult, compute_gradcam
-from src.inference.analysis import AnalysisResult, Status, analyze
+from src.inference.analysis import LEAF_CLOSE_UP, AnalysisResult, Status, analyze
 from src.inference.symptom_screen import SYMPTOMS
 from src.plants.catalog import PlantCatalog
 from src.recommendations.context import CareContext
 from src.recommendations.engine import Recommendation, build_recommendations
+from src.report import PlantHealthReport, build_report
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class AnalysisBundle:
     result: AnalysisResult
     recommendation: Recommendation
     gradcam: GradCamResult | None = None
+    report: PlantHealthReport | None = None
     history_id: int | None = None
     history_error: str | None = None
 
@@ -58,10 +60,11 @@ def apply_attention_check(result: AnalysisResult, gradcam: GradCamResult, thresh
 
 def run_full_analysis(image_bytes: bytes | None, filename: str | None, plant_name: str | None,
                       context: CareContext | None, predictor, catalog: PlantCatalog, thresholds: dict,
-                      history: HistoryStore | None = None, with_gradcam: bool = True) -> AnalysisBundle:
+                      history: HistoryStore | None = None, with_gradcam: bool = True,
+                      photo_type: str = LEAF_CLOSE_UP) -> AnalysisBundle:
     context = context or CareContext()
     try:
-        result = analyze(image_bytes, filename, plant_name, predictor, catalog, thresholds, context)
+        result = analyze(image_bytes, filename, plant_name, predictor, catalog, thresholds, context, photo_type)
     except Exception:  # last-resort guard: never crash the UI
         logger.exception("Unexpected analysis failure")
         result = AnalysisResult((plant_name or "").strip(), Status.ANALYSIS_ERROR,
@@ -70,7 +73,7 @@ def run_full_analysis(image_bytes: bytes | None, filename: str | None, plant_nam
     if gradcam is not None:
         apply_attention_check(result, gradcam, thresholds)
     recommendation = build_recommendations(result, context)
-    bundle = AnalysisBundle(result, recommendation, gradcam)
+    bundle = AnalysisBundle(result, recommendation, gradcam, build_report(result, context))
 
     if history is not None and result.status != Status.INVALID_INPUT:
         try:
@@ -83,7 +86,7 @@ def run_full_analysis(image_bytes: bytes | None, filename: str | None, plant_nam
                 predicted_label=result.predicted_label if result.shows_candidate else None,
                 condition_name=(result.condition.name if (result.shows_candidate and result.condition)
                                 else "Symptom pattern: " + " + ".join(SYMPTOMS[k][0] for k in result.symptom.keys)
-                                if (result.symptom is not None and result.symptom.keys) else None),
+                                if (result.symptom_is_primary and result.symptom.keys) else None),
                 confidence=result.confidence if result.shows_candidate else None,
             )
         except HistoryError as exc:

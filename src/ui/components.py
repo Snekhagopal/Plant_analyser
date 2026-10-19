@@ -89,6 +89,8 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
     )
     if result.status == Status.INVALID_INPUT:
         return
+    if bundle.report is not None:
+        render_overview(bundle.report)
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -97,7 +99,7 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
     with c2:
         if result.shows_candidate and result.condition:
             card("Possible condition", result.condition.name, result.condition.category)
-        elif result.symptom is not None:
+        elif result.symptom_is_primary:
             s = result.symptom
             value = (s.name if s.clear else f"{s.name} + {SYMPTOMS[s.second][0].lower()}" if s.mixed
                      else "No clear pattern")
@@ -108,7 +110,7 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
         if result.shows_candidate and result.confidence is not None:
             card("Model score", f"{result.confidence:.0%}",
                  "Calibrated softmax score - not the probability the diagnosis is correct")
-        elif result.symptom is not None:
+        elif result.symptom_is_primary:
             s = result.symptom
             score = (f"{s.probability:.0%} / {s.probabilities[s.second]:.0%}" if s.mixed
                      else f"{s.probability:.0%}")
@@ -135,7 +137,7 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
             )
         elif gc is not None:
             st.info(gc.error or "The heatmap could not be generated.")
-        elif result.symptom is not None:
+        elif result.symptom_is_primary:
             st.info("No heatmap: Grad-CAM is only available for the 14 crops with a plant-specific disease model.")
         else:
             st.info("No heatmap: Grad-CAM is only shown when the model produced a usable prediction for a "
@@ -156,6 +158,19 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
     elif bundle.history_id:
         st.caption("Saved to history.")
     st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)
+
+
+STATE_LABELS = {
+    "healthy": "🌿 Healthy", "problem": "⚠️ Problem", "unclear": "❔ Unclear", "detected": "⚠️ Found",
+    "not_detected": "✅ Not found", "uncertain": "❔ Uncertain", "not_assessed": "— Not assessed",
+}
+
+
+def render_overview(report):
+    """The four assessments (overall health, visible symptoms, pests, disease) side by side."""
+    for col, a in zip(st.columns(4), report.assessments):
+        with col:
+            card(a.title, STATE_LABELS.get(a.state, a.state), a.headline)
 
 
 def _render_scores(bundle: AnalysisBundle, catalog: PlantCatalog):
@@ -250,7 +265,7 @@ def render_about(catalog: PlantCatalog):
     st.markdown(
         "1. **Validation** – file type, size, readability and basic quality (blur, brightness, leaf-coloured area).\n"
         "2. **Plant check** – your plant name is matched against the 14 species the classifier knows. "
-        "Unsupported plants get general guidance only.\n"
+        "Other plants get a general symptom check and care guidance.\n"
         "3. **Classification** – a MobileNetV2 fine-tuned on PlantVillage scores 38 classes. Scores are "
         "temperature-calibrated on validation data.\n"
         "4. **Reliability checks** – the result is accepted only if it agrees with your plant, passes a "

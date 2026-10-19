@@ -55,6 +55,17 @@ STATUS_LABELS = {
 # Grad-CAM may be computed.
 CANDIDATE_STATUSES = {Status.LIKELY, Status.UNCERTAIN, Status.LOW_QUALITY}
 
+# What the photo shows, as stated by the user. The disease model was trained and
+# calibrated on close-ups of single leaves only.
+LEAF_CLOSE_UP = "leaf"
+WHOLE_PLANT = "whole_plant"
+PHOTO_TYPES = {LEAF_CLOSE_UP: "Leaf close-up", WHOLE_PLANT: "Whole plant"}
+
+WHOLE_PLANT_NOTE = (
+    "This is a whole-plant photo, but the disease model was trained only on close-ups of single leaves, so its "
+    "result cannot be treated as reliable here. For a disease check, upload a close-up of one affected leaf."
+)
+
 
 class Predictor(Protocol):
     catalog: PlantCatalog
@@ -81,12 +92,18 @@ class AnalysisResult:
     ood_flag: bool = False
     pest_flag: bool = False
     pest_flag_sources: list[str] = field(default_factory=list)
-    symptom: SymptomResult | None = None    # general symptom pattern, only for plants without a disease model
+    symptom: SymptomResult | None = None    # visible symptom pattern (photo check), kept separate from disease
+    photo_type: str = LEAF_CLOSE_UP
     warnings: list[str] = field(default_factory=list)
 
     @property
+    def symptom_is_primary(self) -> bool:
+        """The symptom check is the main photo result (plants without a disease model)."""
+        return self.status == Status.UNSUPPORTED_PLANT and self.symptom is not None
+
+    @property
     def status_label(self) -> str:
-        if self.status == Status.UNSUPPORTED_PLANT and self.symptom is not None:
+        if self.symptom_is_primary:
             return "General symptom check (no plant-specific disease model)"
         return STATUS_LABELS[self.status]
 
@@ -119,8 +136,10 @@ def _apply_pest_flags(result: AnalysisResult, output: ModelOutput | None, contex
 
 def analyze(image_bytes: bytes | None, filename: str | None, plant_name: str | None,
             predictor: Predictor | None, catalog: PlantCatalog, thresholds: dict,
-            context: CareContext | None = None) -> AnalysisResult:
+            context: CareContext | None = None, photo_type: str = LEAF_CLOSE_UP) -> AnalysisResult:
     context = context or CareContext()
+    if photo_type not in PHOTO_TYPES:
+        photo_type = LEAF_CLOSE_UP
 
     try:
         plant_name = validate_plant_name(plant_name)
@@ -136,7 +155,8 @@ def analyze(image_bytes: bytes | None, filename: str | None, plant_name: str | N
 
     match: PlantMatch = catalog.match(plant_name)
     quality = assess_quality(image, thresholds)
-    result = AnalysisResult(plant_name, Status.UNCERTAIN, "", species=match.species, image=image, quality=quality)
+    result = AnalysisResult(plant_name, Status.UNCERTAIN, "", species=match.species, image=image, quality=quality,
+                            photo_type=photo_type)
     result.warnings.extend(quality.issues)
 
     output = None
@@ -150,6 +170,7 @@ def analyze(image_bytes: bytes | None, filename: str | None, plant_name: str | N
                 result.message = "The image could not be analysed due to an internal error. Please try another photo."
                 return result
     result.model_output = output
+    result.symptom = output.symptom if output is not None else None
     _apply_pest_flags(result, output, context, thresholds)
 
     if quality.vegetation_fraction < thresholds["vegetation_min_fraction"]:
@@ -158,11 +179,11 @@ def analyze(image_bytes: bytes | None, filename: str | None, plant_name: str | N
             "Very little leaf-coloured area was found in this photo. It may not show a plant, or the leaf "
             "may be too small in the frame. Please upload a close-up of the affected leaf."
         )
+        result.symptom = None   # no plant to describe
         return result
 
     if not match.supported:
         result.status = Status.UNSUPPORTED_PLANT
-        result.symptom = output.symptom if output is not None else None
         if result.symptom is not None:
             result.message = (
                 f"There is no plant-specific disease model for '{plant_name}', so a general symptom check was "
@@ -185,6 +206,11 @@ def analyze(image_bytes: bytes | None, filename: str | None, plant_name: str | N
         return result
 
     _classify(result, output, catalog, species, thresholds)
+    if photo_type == WHOLE_PLANT:
+        result.warnings.insert(0, WHOLE_PLANT_NOTE)
+        if result.status == Status.LIKELY:   # not validated on whole-plant photos: never "likely"
+            result.status = Status.UNCERTAIN
+            result.message = WHOLE_PLANT_NOTE
     return result
 
 

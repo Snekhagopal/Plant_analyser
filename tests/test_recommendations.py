@@ -44,17 +44,18 @@ def test_uncertain_prediction_advises_against_treatment(fake_factory, catalog, t
     assert "uncertain" in rec.summary
 
 
-def test_no_chemical_products_or_doses_recommended(fake_factory, catalog, thresholds, leaf_bytes):
+def test_no_specific_products_or_doses_recommended(fake_factory, catalog, thresholds, leaf_bytes):
+    """Treatment categories are allowed (approved policy), but never named actives, brands or doses."""
     text = ""
     for label in PLANTVILLAGE_LABELS:
         plant = catalog.species_of(label).display_name
         r = analyse(fake_factory({label: 0.97}), catalog, thresholds, leaf_bytes, plant=plant)
         text += all_text(build_recommendations(r, CareContext(insects_visible="Yes", symptoms=["Yellowing leaves"])))
     lowered = text.lower()
-    for banned in ("copper", "mancozeb", "chlorothalonil", "neem", "imidacloprid", "spray with", "apply fungicide",
+    for banned in ("mancozeb", "chlorothalonil", "imidacloprid", "glyphosate", "spray with", "apply fungicide",
                    "apply insecticide", "apply pesticide"):
         assert banned not in lowered
-    assert not re.search(r"\d+\s?(ml|g|mg|oz|tbsp|tsp)\b", lowered)
+    assert not re.search(r"\d+(\.\d+)?\s?(ml|g|mg|kg|l|oz|tbsp|tsp|%|ppm)\b", lowered)
 
 
 def test_unsupported_plant_recommendations_are_general(fake_factory, catalog, thresholds, leaf_bytes):

@@ -131,7 +131,8 @@ def test_every_listed_plant_gets_an_output(fake_factory, catalog, thresholds, le
         rec = build_recommendations(r)
         if match.supported:
             assert r.shows_candidate and r.predicted_label == label, plant
-            assert r.symptom is None, plant            # crop-specific model takes precedence
+            # Crop-specific disease model stays the primary result; the symptom check is shown separately.
+            assert not r.symptom_is_primary and rec.section("symptoms") is not None, plant
         else:
             assert r.status == Status.UNSUPPORTED_PLANT and r.symptom.key == "mottling", plant
             assert "**Mosaic, mottling or yellowing**" in rec.summary, plant

@@ -73,6 +73,29 @@ def test_results_section_renders_for_real_analyses(app, image_name, plant):
 
 
 @requires_checkpoint
+def test_photo_type_selector_and_assessment_overview(app):
+    radio = app.radio[0]
+    assert radio.label == "What does the photo show?" and radio.value == "leaf"
+    assert list(radio.options) == ["Leaf close-up", "Whole plant"]
+
+    from src import config
+    from src.inference.analysis import WHOLE_PLANT
+    from src.inference.predictor import PlantDiseasePredictor
+    from src.service import run_full_analysis
+    predictor = PlantDiseasePredictor()
+    photo = (config.ROOT / "tests" / "fixtures" / "hibiscus_leaf_spots.jpg").read_bytes()
+    bundle = run_full_analysis(photo, "h.jpg", "Tomato", None, predictor, predictor.catalog,
+                               predictor.thresholds, photo_type=WHOLE_PLANT)
+    app.session_state["bundle"] = bundle
+    app.run()
+    assert not app.exception
+    text = " ".join(m.value for m in app.markdown)
+    for title in ("Overall health", "Visible symptoms", "Pests", "Disease"):
+        assert title in text
+    assert bundle.result.status != bundle.result.status.LIKELY
+
+
+@requires_checkpoint
 def test_history_tab_renders_saved_entries(tmp_path, monkeypatch):
     from src.database.history import HistoryStore
     db = tmp_path / "history.db"

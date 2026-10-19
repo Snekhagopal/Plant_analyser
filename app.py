@@ -11,6 +11,7 @@ import streamlit as st
 
 from src import config
 from src.database.history import HistoryError, HistoryStore
+from src.inference.analysis import LEAF_CLOSE_UP, PHOTO_TYPES
 from src.inference.model import ModelLoadError
 from src.inference.predictor import PlantDiseasePredictor, load_thresholds
 from src.plants.care_profiles import profile_names
@@ -101,12 +102,19 @@ def analyze_tab(predictor, model_error, catalog, thresholds, history):
     with left:
         uploaded = st.file_uploader(
             "Plant or leaf photo *", type=sorted(config.ALLOWED_EXTENSIONS),
-            help=f"JPG or PNG, up to {config.MAX_UPLOAD_MB} MB. Best: one leaf, in daylight, filling the frame.",
+            help=f"JPG or PNG, up to {config.MAX_UPLOAD_MB} MB. A leaf close-up or the whole plant; for a disease "
+                 "check, one affected leaf in daylight, filling the frame, works best.",
         )
         if uploaded is not None:
             st.image(uploaded, caption="Preview", width="stretch")
     with right:
         plant_name = plant_name_input(catalog)
+        photo_type = st.radio(
+            "What does the photo show?", list(PHOTO_TYPES), format_func=PHOTO_TYPES.get, horizontal=True,
+            index=list(PHOTO_TYPES).index(LEAF_CLOSE_UP),
+            help="Disease checks are most reliable on a close-up of one affected leaf. Whole-plant photos are "
+                 "accepted, but their disease result is shown as uncertain at most.",
+        )
         ctx = questionnaire()
         clicked = st.button("🔍 Analyze plant", type="primary", width="stretch")
 
@@ -124,7 +132,7 @@ def analyze_tab(predictor, model_error, catalog, thresholds, history):
             with st.spinner("Analysing the photo…"):
                 st.session_state["bundle"] = run_full_analysis(
                     uploaded.getvalue(), uploaded.name, plant_name, ctx,
-                    predictor, catalog, thresholds, history,
+                    predictor, catalog, thresholds, history, photo_type=photo_type,
                 )
 
     bundle = st.session_state.get("bundle")

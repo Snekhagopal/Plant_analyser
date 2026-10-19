@@ -6,8 +6,8 @@ import json
 from dataclasses import dataclass, field
 
 from src import config
-from src.inference.analysis import AnalysisResult, Status
-from src.inference.symptom_screen import SYMPTOMS
+from src.inference.analysis import WHOLE_PLANT, AnalysisResult, Status
+from src.inference.symptom_screen import SYMPTOMS, SymptomResult
 from src.plants.care_profiles import PlantProfile, find_profile
 from src.plants.catalog import OTHER_OPTION
 from src.plants.conditions import CATEGORY_SANITATION, HEALTHY, OOMYCETE
@@ -16,6 +16,7 @@ from src.recommendations.assessments import (
 )
 from src.recommendations.context import CareContext
 from src.recommendations.symptoms import SYMPTOM_ADVICE
+from src.recommendations.treatments import treatment_advice
 
 GENERAL_LIMITATIONS = [
     "Image-based predictions are not definitive diagnoses. Confirm with a local agricultural extension "
@@ -33,12 +34,21 @@ EXPERT_TRIGGERS = [
     "You suspect a regulated or quarantine disease (e.g. citrus greening, late blight).",
 ]
 
+SYMPTOM_SEPARATE_NOTE = (
+    "This photo check describes what the leaf looks like. It is separate from the disease model's result above "
+    "and does not name a disease."
+)
+
+WHOLE_PLANT_ACTION = (
+    "For a disease check, upload a close-up of one affected leaf: the disease model was trained on leaf "
+    "close-ups, so whole-plant photos cannot give a reliable disease result."
+)
+
 SYMPTOM_LIMITATION = (
     "The general symptom check describes what the leaf looks like (e.g. spots, mildew, mottling), not which "
     "disease causes it. When it reports a clear pattern, it was right {acc} of the time on lab photos of "
     "leaves; real garden photos are harder."
 )
-
 
 
 def _symptom_accuracy() -> str:
@@ -126,7 +136,7 @@ def build_recommendations(result: AnalysisResult, ctx: CareContext | None = None
             actions.append("Double-check the plant name you selected, then re-upload a clear photo of a single leaf.")
         elif result.status in (Status.UNFAMILIAR, Status.POSSIBLE_NON_PLANT):
             actions.append("Retake the photo: one leaf, filling most of the frame, in daylight, on a plain background.")
-        elif result.status == Status.UNSUPPORTED_PLANT and result.symptom is not None:
+        elif result.symptom_is_primary:
             for key in result.symptom.keys:
                 advice = SYMPTOM_ADVICE[key]
                 actions.extend(advice["actions"])
@@ -153,6 +163,8 @@ def build_recommendations(result: AnalysisResult, ctx: CareContext | None = None
 
     if result.quality and result.quality.issues:
         actions.extend(result.quality.issues)
+    if result.photo_type == WHOLE_PLANT and result.species is not None:
+        actions.insert(0, WHOLE_PLANT_ACTION)
     if pests_in_photo:
         actions.insert(0, "Possible insects or eggs were detected in the photo. Check both leaf surfaces with a "
                           "magnifying glass and isolate the plant from others until you know what they are.")
@@ -160,12 +172,18 @@ def build_recommendations(result: AnalysisResult, ctx: CareContext | None = None
     rec.sections.append(Section("actions", "Recommended immediate actions", actions))
     if pests_in_photo and rec.pests:
         rec.sections.append(Section("pests", "Pests (detected in photo)", _assessment_items(rec.pests)))
+    if result.symptom is not None and not result.symptom_is_primary:
+        rec.sections.append(Section("symptoms", "Visible symptoms (photo check)",
+                                    _symptom_items(result.symptom, result)))
     rec.sections.append(Section("inspect", "What to inspect next", inspect))
     if profile:
         rec.sections.append(Section("care", f"Care guide: {profile.name} ({profile.care.label.lower()})",
                                     care_items(profile)))
     if disease:
         rec.sections.append(Section("disease", "Disease management (low-risk steps)", disease))
+    treatment = treatment_advice(result)
+    if treatment:
+        rec.sections.append(Section("treatment", treatment.title, treatment.items))
 
     watering_items = [PHOTO_CAVEAT_WATER] + _assessment_items(rec.watering)
     rec.sections.append(Section("watering", "Watering", watering_items))
@@ -195,6 +213,29 @@ def build_recommendations(result: AnalysisResult, ctx: CareContext | None = None
     return rec
 
 
+def symptom_phrase(s: SymptomResult) -> str:
+    """One-line description of a symptom-check result (bold markers for the UI)."""
+    if s.clear:
+        return f"**{s.name}** ({s.description[0].lower()}{s.description[1:].rstrip('.')})."
+    if s.mixed:
+        return (f"signs of both **{s.name}** and **{SYMPTOMS[s.second][0]}**. The check could not separate them; "
+                "the leaf may show both.")
+    return f"**no clear pattern** (closest: {s.name.lower()})."
+
+
+def _symptom_items(s: SymptomResult, result: AnalysisResult) -> list[str]:
+    first = (f"Visible pattern: {symptom_phrase(s)}" if s.keys
+             else f"No clear visible pattern (closest: {s.name.lower()}).")
+    items = [first, SYMPTOM_SEPARATE_NOTE]
+    disease_says_healthy = (result.status == Status.LIKELY and result.condition is not None
+                            and result.condition.is_healthy)
+    if disease_says_healthy and any(k != "healthy" for k in s.keys):
+        items.append("The two checks disagree. Inspect the leaf closely and compare it with the signs listed "
+                     "below; if in doubt, ask a local expert.")
+    items.extend(i for k in s.keys if k != "healthy" for i in SYMPTOM_ADVICE[k]["inspect"])
+    return items
+
+
 def plant_profile(result: AnalysisResult) -> PlantProfile | None:
     profile = find_profile(result.plant_name)
     if profile is None and result.species is not None:
@@ -220,7 +261,7 @@ def _summary(result: AnalysisResult, profile: PlantProfile | None = None, pests_
         looks_like = f" It looks most like {hits[0][0]}." if hits else ""
         disease = (f" The disease model's suggestion ({result.condition.name}) is unreliable for "
                    "pest-infested leaves." if result.shows_candidate and result.condition else "")
-        if result.symptom is not None:
+        if result.symptom_is_primary:
             disease = " The general symptom check is unreliable for pest-infested leaves."
         return f"**Possible insects or eggs were detected on your {plant} leaf.**{looks_like}{disease}"
     if result.shows_candidate and result.condition:
@@ -231,17 +272,11 @@ def _summary(result: AnalysisResult, profile: PlantProfile | None = None, pests_
         return (f"Possible condition for your {plant}: **{name}** (uncertain). Please confirm with the checks "
                 f"below.{pest_note}")
     text = result.message
-    if result.symptom is not None:
+    if result.symptom_is_primary:
         s = result.symptom
-        if s.clear:
-            text = (f"Visible pattern on your {plant} leaf: **{s.name}** ({s.description[0].lower()}"
-                    f"{s.description[1:].rstrip('.')}). ")
-        elif s.mixed:
-            text = (f"Visible pattern on your {plant} leaf: signs of both **{s.name}** and "
-                    f"**{SYMPTOMS[s.second][0]}**. The check could not separate them; the leaf may show both. ")
-        else:
-            text = f"The symptom check found **no clear pattern** on your {plant} leaf (closest: {s.name.lower()}). "
-        text += ("This is a general symptom check: there is no plant-specific disease model for this plant, "
+        text = (f"Visible pattern on your {plant} leaf: {symptom_phrase(s)} " if s.keys else
+                f"The symptom check found **no clear pattern** on your {plant} leaf (closest: {s.name.lower()}). ")
+        text +=("This is a general symptom check: there is no plant-specific disease model for this plant, "
                  "so the exact disease cannot be named.")
     if result.status == Status.UNSUPPORTED_PLANT and profile is not None:
         text += f" A care guide for {profile.care.label.lower()}s is included below."
