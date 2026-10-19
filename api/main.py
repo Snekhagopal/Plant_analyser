@@ -26,9 +26,9 @@ from pydantic import ValidationError
 from starlette.exceptions import HTTPException
 
 from api.schemas import (
-    QUESTIONS, AboutResponse, AnalyzeResponse, CareContextIn, CareOut, ConditionOut, DeletedResponse,
-    ErrorResponse, HealthResponse, HistoryDetail, HistoryItem, MetaResponse, PlantGuideResponse, PlantOption,
-    QuestionOut,
+    QUESTIONS, AboutResponse, AnalyzeResponse, CareContextIn, CareGroupOut, CareOut, ConditionOut,
+    DeletedResponse, ErrorResponse, HealthResponse, HistoryDetail, HistoryItem, LibraryCondition, MetaResponse,
+    PlantGuideResponse, PlantOption, QuestionOut,
 )
 from api.serialize import to_response
 from src import config
@@ -36,7 +36,7 @@ from src.database.history import HistoryError, HistoryStore
 from src.inference.analysis import LEAF_CLOSE_UP, PHOTO_TYPES, Status
 from src.inference.model import ModelLoadError
 from src.inference.predictor import PlantDiseasePredictor, load_thresholds
-from src.plants.care_profiles import find_profile, profile_names
+from src.plants.care_profiles import GROUPS, PROFILES, find_profile, profile_names
 from src.plants.catalog import OTHER_OPTION, PLANTVILLAGE_LABELS, PlantCatalog
 from src.plants.conditions import get_condition
 from src.recommendations.engine import GENERAL_LIMITATIONS
@@ -220,13 +220,7 @@ def create_app(predictor=_DEFAULT, history=_DEFAULT) -> FastAPI:
         profile, species = find_profile(name), catalog.match(name).species
         if profile is None and species is None:
             raise HTTPException(404, "No care guide or disease check for this plant name.")
-        conditions = []
-        for label in species.labels if species else []:
-            c = get_condition(label)
-            if c is not None:
-                conditions.append(ConditionOut(label=label, name=c.name, category=c.category, cause=c.cause,
-                                               symptoms=c.symptoms, inspect=c.inspect, prevention=c.prevention,
-                                               escalate=c.escalate))
+        conditions = [_condition(label) for label in (species.labels if species else []) if get_condition(label)]
         care = None
         if profile is not None:
             g = profile.care
@@ -235,6 +229,21 @@ def create_app(predictor=_DEFAULT, history=_DEFAULT) -> FastAPI:
         return PlantGuideResponse(name=profile.name if profile else species.display_name,
                                   disease_check=species is not None, care=care, conditions=conditions,
                                   coverage_warning=species.coverage_warning if species else None)
+
+    @app.get("/api/conditions", response_model=list[LibraryCondition])
+    def conditions(request: Request):
+        """Reference information for every class the disease model knows (Disease Library)."""
+        catalog: PlantCatalog = request.app.state.catalog
+        return [LibraryCondition(crop=catalog.species_of(label).display_name, **_condition(label).model_dump())
+                for label in catalog.class_names if get_condition(label)]
+
+    @app.get("/api/care-groups", response_model=list[CareGroupOut])
+    def care_groups():
+        """General care guidance per plant group, with the plants in each group (Care Tips)."""
+        return [CareGroupOut(key=key, label=g.label, watering=g.watering, light=g.light, pests=g.pests,
+                             problems=g.problems,
+                             plants=sorted(p.name for p in PROFILES if p.group == key))
+                for key, g in GROUPS.items()]
 
     @app.get("/api/about", response_model=AboutResponse)
     def about(request: Request):
@@ -252,6 +261,12 @@ def create_app(predictor=_DEFAULT, history=_DEFAULT) -> FastAPI:
                              symptom_check=_symptom_metrics(cal), limitations=GENERAL_LIMITATIONS)
 
     return app
+
+
+def _condition(label: str) -> ConditionOut:
+    c = get_condition(label)
+    return ConditionOut(label=label, name=c.name, category=c.category, cause=c.cause, symptoms=c.symptoms,
+                        inspect=c.inspect, prevention=c.prevention, escalate=c.escalate)
 
 
 # ---- measured metrics, copied from calibration.json (never hand-typed) ----

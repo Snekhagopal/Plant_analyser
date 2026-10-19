@@ -262,6 +262,29 @@ def test_plant_guide_care_only_plant_and_alias(fake_factory, tmp_path):
         assert_error(c.get("/api/plants/Unobtainium"), 404, "not_found")
 
 
+def test_condition_library_covers_every_class(fake_factory, tmp_path):
+    with client_for(fake_factory(), tmp_path) as c:
+        lib = c.get("/api/conditions").json()
+    assert len(lib) == 38 and {x["crop"] for x in lib} >= {"Tomato", "Apple", "Corn (maize)"}
+    scab = next(x for x in lib if x["label"] == "Apple___Apple_scab")
+    assert scab["name"] == "Apple scab" and scab["category"] == "Fungal disease" and scab["symptoms"]
+
+
+def test_care_groups_list_every_profile_once(fake_factory, tmp_path):
+    from src.plants.care_profiles import PROFILES
+    with client_for(fake_factory(), tmp_path) as c:
+        groups = c.get("/api/care-groups").json()
+    plants = [p for g in groups for p in g["plants"]]
+    assert sorted(plants) == sorted(p.name for p in PROFILES)
+    assert all(g["watering"] and g["light"] for g in groups)
+
+
+def test_prediction_carries_reference_symptoms(fake_factory, tmp_path, leaf):
+    with client_for(fake_factory({"Tomato___Early_blight": 0.97}), tmp_path) as c:
+        p = post(c, leaf).json()["prediction"]
+    assert p["symptoms"] and p["prevention"]
+
+
 def test_about_reports_recorded_metrics_only(fake_factory, tmp_path):
     cal = json.loads(config.CALIBRATION_PATH.read_text())
     with client_for(fake_factory(), tmp_path) as c:

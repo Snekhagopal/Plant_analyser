@@ -1,0 +1,1795 @@
+{
+  "components": {
+    "schemas": {
+      "AboutResponse": {
+        "properties": {
+          "disease_test": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disease Test"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "model": {
+            "additionalProperties": true,
+            "title": "Model",
+            "type": "object"
+          },
+          "pest_screen": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pest Screen"
+          },
+          "symptom_check": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symptom Check"
+          }
+        },
+        "required": [
+          "model",
+          "disease_test",
+          "pest_screen",
+          "symptom_check",
+          "limitations"
+        ],
+        "title": "AboutResponse",
+        "type": "object"
+      },
+      "AnalyzeResponse": {
+        "properties": {
+          "history_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History Error"
+          },
+          "history_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History Id"
+          },
+          "images": {
+            "$ref": "#/components/schemas/ImagesOut"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "model_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelDetailsOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pests": {
+            "$ref": "#/components/schemas/PestOut"
+          },
+          "photo_type": {
+            "enum": [
+              "leaf",
+              "whole_plant"
+            ],
+            "title": "Photo Type",
+            "type": "string"
+          },
+          "plant": {
+            "$ref": "#/components/schemas/PlantOut"
+          },
+          "prediction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QualityOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/SectionOut"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ReportOut"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "status_label": {
+            "title": "Status Label",
+            "type": "string"
+          },
+          "summary": {
+            "description": "May contain **bold** markers; render as text, never as HTML",
+            "title": "Summary",
+            "type": "string"
+          },
+          "symptom": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SymptomOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "status_label",
+          "message",
+          "summary",
+          "photo_type",
+          "plant",
+          "report",
+          "prediction",
+          "symptom",
+          "pests",
+          "recommendations",
+          "quality",
+          "images",
+          "model_details",
+          "warnings",
+          "history_id",
+          "history_error"
+        ],
+        "title": "AnalyzeResponse",
+        "type": "object"
+      },
+      "AssessmentOut": {
+        "properties": {
+          "details": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Details",
+            "type": "array"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "state",
+          "headline",
+          "details"
+        ],
+        "title": "AssessmentOut",
+        "type": "object"
+      },
+      "Body_analyze_api_analyze_post": {
+        "properties": {
+          "context": {
+            "default": "",
+            "title": "Context",
+            "type": "string"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "photo_type": {
+            "default": "leaf",
+            "title": "Photo Type",
+            "type": "string"
+          },
+          "plant_name": {
+            "default": "",
+            "title": "Plant Name",
+            "type": "string"
+          }
+        },
+        "title": "Body_analyze_api_analyze_post",
+        "type": "object"
+      },
+      "CareGroupOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "light": {
+            "title": "Light",
+            "type": "string"
+          },
+          "pests": {
+            "title": "Pests",
+            "type": "string"
+          },
+          "plants": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Plants",
+            "type": "array"
+          },
+          "problems": {
+            "title": "Problems",
+            "type": "string"
+          },
+          "watering": {
+            "title": "Watering",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "watering",
+          "light",
+          "pests",
+          "problems",
+          "plants"
+        ],
+        "title": "CareGroupOut",
+        "type": "object"
+      },
+      "CareOut": {
+        "properties": {
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "light": {
+            "title": "Light",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "pests": {
+            "title": "Pests",
+            "type": "string"
+          },
+          "problems": {
+            "title": "Problems",
+            "type": "string"
+          },
+          "watering": {
+            "title": "Watering",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group",
+          "watering",
+          "light",
+          "pests",
+          "problems",
+          "note"
+        ],
+        "title": "CareOut",
+        "type": "object"
+      },
+      "ConditionOut": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "cause": {
+            "title": "Cause",
+            "type": "string"
+          },
+          "escalate": {
+            "title": "Escalate",
+            "type": "string"
+          },
+          "inspect": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Inspect",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prevention": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prevention",
+            "type": "array"
+          },
+          "symptoms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Symptoms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "name",
+          "category",
+          "cause",
+          "symptoms",
+          "inspect",
+          "prevention",
+          "escalate"
+        ],
+        "title": "ConditionOut",
+        "type": "object"
+      },
+      "DeletedResponse": {
+        "properties": {
+          "deleted": {
+            "title": "Deleted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "title": "DeletedResponse",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "history_available": {
+            "title": "History Available",
+            "type": "boolean"
+          },
+          "model_loaded": {
+            "title": "Model Loaded",
+            "type": "boolean"
+          },
+          "pest_screen": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pest Screen"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "symptom_check": {
+            "title": "Symptom Check",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "model_loaded",
+          "pest_screen",
+          "symptom_check",
+          "history_available"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HistoryDetail": {
+        "properties": {
+          "condition_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition Name"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "plant_name": {
+            "title": "Plant Name",
+            "type": "string"
+          },
+          "predicted_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predicted Label"
+          },
+          "recommendations": {
+            "additionalProperties": true,
+            "title": "Recommendations",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "status_label": {
+            "title": "Status Label",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "plant_name",
+          "status",
+          "status_label",
+          "condition_name",
+          "confidence",
+          "predicted_label",
+          "summary",
+          "recommendations"
+        ],
+        "title": "HistoryDetail",
+        "type": "object"
+      },
+      "HistoryItem": {
+        "properties": {
+          "condition_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition Name"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "plant_name": {
+            "title": "Plant Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "status_label": {
+            "title": "Status Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "plant_name",
+          "status",
+          "status_label",
+          "condition_name",
+          "confidence"
+        ],
+        "title": "HistoryItem",
+        "type": "object"
+      },
+      "ImagesOut": {
+        "properties": {
+          "gradcam": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "JPEG data URL of the Grad-CAM overlay",
+            "title": "Gradcam"
+          },
+          "gradcam_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gradcam Note"
+          },
+          "leaf_attention": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leaf Attention"
+          },
+          "photo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "JPEG data URL of the (EXIF-rotated) photo",
+            "title": "Photo"
+          }
+        },
+        "title": "ImagesOut",
+        "type": "object"
+      },
+      "LibraryCondition": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "cause": {
+            "title": "Cause",
+            "type": "string"
+          },
+          "crop": {
+            "title": "Crop",
+            "type": "string"
+          },
+          "escalate": {
+            "title": "Escalate",
+            "type": "string"
+          },
+          "inspect": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Inspect",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prevention": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prevention",
+            "type": "array"
+          },
+          "symptoms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Symptoms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "name",
+          "category",
+          "cause",
+          "symptoms",
+          "inspect",
+          "prevention",
+          "escalate",
+          "crop"
+        ],
+        "title": "LibraryCondition",
+        "type": "object"
+      },
+      "MetaResponse": {
+        "properties": {
+          "allowed_extensions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Extensions",
+            "type": "array"
+          },
+          "disease_check_crops": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Disease Check Crops",
+            "type": "array"
+          },
+          "max_upload_mb": {
+            "title": "Max Upload Mb",
+            "type": "integer"
+          },
+          "model_loaded": {
+            "title": "Model Loaded",
+            "type": "boolean"
+          },
+          "other_option": {
+            "title": "Other Option",
+            "type": "string"
+          },
+          "photo_types": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Photo Types",
+            "type": "object"
+          },
+          "plants": {
+            "items": {
+              "$ref": "#/components/schemas/PlantOption"
+            },
+            "title": "Plants",
+            "type": "array"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOut"
+            },
+            "title": "Questions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plants",
+          "other_option",
+          "photo_types",
+          "questions",
+          "max_upload_mb",
+          "allowed_extensions",
+          "disease_check_crops",
+          "model_loaded"
+        ],
+        "title": "MetaResponse",
+        "type": "object"
+      },
+      "ModelDetailsOut": {
+        "properties": {
+          "model_top_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Top Label"
+          },
+          "plant_mass": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plant Mass"
+          },
+          "top_k": {
+            "items": {
+              "$ref": "#/components/schemas/ScoredLabel"
+            },
+            "title": "Top K",
+            "type": "array"
+          },
+          "unfamiliar": {
+            "title": "Unfamiliar",
+            "type": "boolean"
+          },
+          "unfamiliarity_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unfamiliarity Score"
+          }
+        },
+        "required": [
+          "top_k",
+          "plant_mass",
+          "unfamiliarity_score",
+          "unfamiliar",
+          "model_top_label"
+        ],
+        "title": "ModelDetailsOut",
+        "type": "object"
+      },
+      "PestOut": {
+        "properties": {
+          "appearance": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Appearance",
+            "type": "array"
+          },
+          "flagged": {
+            "title": "Flagged",
+            "type": "boolean"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "flagged",
+          "sources",
+          "score",
+          "method",
+          "appearance"
+        ],
+        "title": "PestOut",
+        "type": "object"
+      },
+      "PlantGuideResponse": {
+        "properties": {
+          "care": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CareOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionOut"
+            },
+            "title": "Conditions",
+            "type": "array"
+          },
+          "coverage_warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Warning"
+          },
+          "disease_check": {
+            "title": "Disease Check",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "disease_check",
+          "care",
+          "conditions",
+          "coverage_warning"
+        ],
+        "title": "PlantGuideResponse",
+        "type": "object"
+      },
+      "PlantOption": {
+        "properties": {
+          "disease_check": {
+            "title": "Disease Check",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "disease_check"
+        ],
+        "title": "PlantOption",
+        "type": "object"
+      },
+      "PlantOut": {
+        "properties": {
+          "disease_check": {
+            "title": "Disease Check",
+            "type": "boolean"
+          },
+          "input": {
+            "title": "Input",
+            "type": "string"
+          },
+          "matched_species": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matched Species"
+          }
+        },
+        "required": [
+          "input",
+          "matched_species",
+          "disease_check"
+        ],
+        "title": "PlantOut",
+        "type": "object"
+      },
+      "PredictionOut": {
+        "description": "The disease model's candidate. Present only for statuses that may show one.",
+        "properties": {
+          "alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/ScoredLabel"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "cause": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cause"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prevention": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prevention",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "symptoms": {
+            "description": "Typical signs (reference info, not from the photo)",
+            "items": {
+              "type": "string"
+            },
+            "title": "Symptoms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "name",
+          "category",
+          "cause",
+          "score",
+          "alternatives"
+        ],
+        "title": "PredictionOut",
+        "type": "object"
+      },
+      "QualityOut": {
+        "properties": {
+          "blur_variance": {
+            "title": "Blur Variance",
+            "type": "number"
+          },
+          "brightness": {
+            "title": "Brightness",
+            "type": "number"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "vegetation_fraction": {
+            "title": "Vegetation Fraction",
+            "type": "number"
+          }
+        },
+        "required": [
+          "brightness",
+          "blur_variance",
+          "vegetation_fraction",
+          "issues"
+        ],
+        "title": "QualityOut",
+        "type": "object"
+      },
+      "QuestionOut": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "multiple": {
+            "title": "Multiple",
+            "type": "boolean"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Options",
+            "type": "array"
+          }
+        },
+        "required": [
+          "field",
+          "label",
+          "options",
+          "multiple"
+        ],
+        "title": "QuestionOut",
+        "type": "object"
+      },
+      "ReportOut": {
+        "properties": {
+          "disease": {
+            "$ref": "#/components/schemas/AssessmentOut"
+          },
+          "health": {
+            "$ref": "#/components/schemas/AssessmentOut"
+          },
+          "pests": {
+            "$ref": "#/components/schemas/AssessmentOut"
+          },
+          "symptoms": {
+            "$ref": "#/components/schemas/AssessmentOut"
+          }
+        },
+        "required": [
+          "health",
+          "symptoms",
+          "pests",
+          "disease"
+        ],
+        "title": "ReportOut",
+        "type": "object"
+      },
+      "ScoredLabel": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "species": {
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "name",
+          "species",
+          "score"
+        ],
+        "title": "ScoredLabel",
+        "type": "object"
+      },
+      "SectionOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "items"
+        ],
+        "title": "SectionOut",
+        "type": "object"
+      },
+      "SymptomOut": {
+        "description": "Photo symptom check - a visible pattern, never a disease name.",
+        "properties": {
+          "clear": {
+            "title": "Clear",
+            "type": "boolean"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "is_primary": {
+            "title": "Is Primary",
+            "type": "boolean"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "patterns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Patterns",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Scores",
+            "type": "object"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "description",
+          "score",
+          "clear",
+          "patterns",
+          "is_primary",
+          "scores"
+        ],
+        "title": "SymptomOut",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "AI Plant Health Assistant API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/about": {
+      "get": {
+        "operationId": "about_api_about_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AboutResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "About"
+      }
+    },
+    "/api/analyze": {
+      "post": {
+        "operationId": "analyze_api_analyze_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_api_analyze_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Analyze"
+      }
+    },
+    "/api/care-groups": {
+      "get": {
+        "description": "General care guidance per plant group, with the plants in each group (Care Tips).",
+        "operationId": "care_groups_api_care_groups_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CareGroupOut"
+                  },
+                  "title": "Response Care Groups Api Care Groups Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Care Groups"
+      }
+    },
+    "/api/conditions": {
+      "get": {
+        "description": "Reference information for every class the disease model knows (Disease Library).",
+        "operationId": "conditions_api_conditions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryCondition"
+                  },
+                  "title": "Response Conditions Api Conditions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Conditions"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/history": {
+      "delete": {
+        "operationId": "history_clear_api_history_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "History Clear"
+      },
+      "get": {
+        "operationId": "history_list_api_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HistoryItem"
+                  },
+                  "title": "Response History List Api History Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "History List"
+      }
+    },
+    "/api/history/{record_id}": {
+      "delete": {
+        "operationId": "history_delete_api_history__record_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "title": "Record Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "History Delete"
+      },
+      "get": {
+        "operationId": "history_get_api_history__record_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "title": "Record Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "History Get"
+      }
+    },
+    "/api/meta": {
+      "get": {
+        "operationId": "meta_api_meta_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Meta"
+      }
+    },
+    "/api/plants/{name}": {
+      "get": {
+        "operationId": "plant_guide_api_plants__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantGuideResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Plant Guide"
+      }
+    }
+  }
+}

@@ -46,7 +46,8 @@ def to_response(bundle: AnalysisBundle, catalog: PlantCatalog) -> AnalyzeRespons
         prediction = PredictionOut(
             label=r.predicted_label, name=cond.name if cond else catalog.condition_display(r.predicted_label),
             category=cond.category if cond else None, cause=(cond.cause or None) if cond else None,
-            score=float(r.confidence), alternatives=[_scored(l, p, catalog) for l, p in r.alternatives])
+            score=float(r.confidence), alternatives=[_scored(l, p, catalog) for l, p in r.alternatives],
+            symptoms=list(cond.symptoms) if cond else [], prevention=list(cond.prevention) if cond else [])
 
     symptom = None
     if r.symptom is not None:

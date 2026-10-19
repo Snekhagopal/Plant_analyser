@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* PlantVision AI design tokens: deep forest greens, emerald, mint and lime accents. */
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-caveat), cursive;
+
+  --color-forest-950: #03110a;
+  --color-forest-900: #06180f;
+  --color-forest-850: #082016;
+  --color-forest-800: #0b2a1c;
+  --color-forest-700: #103a26;
+  --color-forest-600: #175033;
+  --color-mint-100: #e3fbe9;
+  --color-mint-200: #c4f5d2;
+  --color-mint-300: #9fe8b6;
+  --color-leaf-400: #7fdc6a;
+  --color-leaf-500: #5cc94d;
+  --color-lime-glow: #b8f36b;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-forest-950);
+  }
+
+  body {
+    min-height: 100dvh;
+    color: var(--color-mint-100);
+    background:
+      radial-gradient(1200px 700px at 78% -10%, rgba(120, 200, 90, 0.18), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(30, 120, 70, 0.22), transparent 60%),
+      linear-gradient(180deg, #06180f 0%, #04120b 55%, #03110a 100%);
+    background-attachment: fixed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lime-glow);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Translucent dark-green card with a soft border and shadow. */
+@utility glass {
+  background: linear-gradient(160deg, rgba(22, 70, 44, 0.55), rgba(8, 32, 20, 0.62));
+  border: 1px solid rgba(160, 235, 180, 0.14);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Slightly lighter inner tile used inside glass cards. */
+@utility glass-tile {
+  background: rgba(14, 52, 32, 0.6);
+  border: 1px solid rgba(160, 235, 180, 0.1);
+}
+
+@utility text-gradient {
+  background: linear-gradient(90deg, #7fdc6a, #b8f36b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

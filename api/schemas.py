@@ -102,6 +102,8 @@ class PredictionOut(BaseModel):
     cause: str | None
     score: float
     alternatives: list[ScoredLabel]
+    symptoms: list[str] = Field(default_factory=list, description="Typical signs (reference info, not from the photo)")
+    prevention: list[str] = Field(default_factory=list)
 
 
 class SymptomOut(BaseModel):
@@ -231,6 +233,20 @@ class ConditionOut(BaseModel):
     inspect: list[str]
     prevention: list[str]
     escalate: str
+
+
+class LibraryCondition(ConditionOut):
+    crop: str
+
+
+class CareGroupOut(BaseModel):
+    key: str
+    label: str
+    watering: str
+    light: str
+    pests: str
+    problems: str
+    plants: list[str]
 
 
 class CareOut(BaseModel):
