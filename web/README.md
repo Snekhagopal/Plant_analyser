@@ -29,6 +29,26 @@ PYTHON=~/plant-health-env/bin/python npm run check:api   # frontend types == Fas
 PYTHON=~/plant-health-env/bin/python npm run gen:api     # regenerate after changing api/schemas.py
 ```
 
+## End-to-end tests (Playwright)
+
+```bash
+PYTHON=~/plant-health-env/bin/python npm run test:e2e        # everything (~2 min)
+PYTHON=~/plant-health-env/bin/python npm run test:e2e:fast   # skip the real-model project
+npx playwright show-report                                    # HTML report of the last run
+```
+
+Playwright starts its own servers, all with **temporary history databases** (the real `data/history.db`
+is never touched), and uses the installed Google Chrome (`PW_CHANNEL=""` for Playwright's Chromium):
+
+| Port | Server | Used by |
+|---|---|---|
+| 3100 | separate production build of this app (`.next-e2e`) with a dead API base; tests reroute API calls | all |
+| 8101 | `e2e/servers/scripted_api.py`: the real FastAPI pipeline with **scripted classifier scores**, so every result type is reproducible | `desktop`, `mobile` |
+| 8102 | `e2e/servers/real_api.py`: the real API with the real MobileNetV2, CLIP and Grad-CAM | `real-model` |
+
+Projects: `desktop` (1536 px, all UI tests), `mobile` (390 px, layout tests) and `real-model` (real inference;
+`E2E_REAL=0` skips it). Scripted tests validate the UI and the backend's decision rules, never model accuracy.
+
 ## Pages
 
 | Route | Data |

@@ -9,7 +9,9 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "gen:api": "cd .. && ${PYTHON:-python3} -m api.export_openapi > web/openapi.json && cd web && openapi-typescript openapi.json -o src/lib/api-schema.d.ts",
-    "check:api": "cd .. && ${PYTHON:-python3} -m api.export_openapi | diff -q - web/openapi.json && cd web && openapi-typescript openapi.json -o /tmp/plantvision-api-check.d.ts && diff -q /tmp/plantvision-api-check.d.ts src/lib/api-schema.d.ts && echo 'API types match the FastAPI schema'"
+    "check:api": "cd .. && ${PYTHON:-python3} -m api.export_openapi | diff -q - web/openapi.json && cd web && openapi-typescript openapi.json -o /tmp/plantvision-api-check.d.ts && diff -q /tmp/plantvision-api-check.d.ts src/lib/api-schema.d.ts && echo 'API types match the FastAPI schema'",
+    "test:e2e": "playwright test",
+    "test:e2e:fast": "E2E_REAL=0 playwright test"
   },
   "dependencies": {
     "lucide-react": "1.52.0",
@@ -18,6 +20,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
