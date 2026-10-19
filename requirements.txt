@@ -1,0 +1,27 @@
+# Versions are those the app and tests were verified with (Python 3.11, macOS).
+# "~=" allows patch updates only, to avoid surprise incompatibilities.
+
+# Core: model inference, explainability, UI
+torch~=2.14.1
+torchvision~=0.29.1
+grad-cam~=1.5.7
+streamlit~=1.66.0
+numpy~=2.4.6
+pandas~=3.0.6
+pillow~=12.3.0
+opencv-python-headless~=5.0.0.93
+
+# Zero-shot CLIP pest screen (weights fetched once by `python -m src.inference.download_models`)
+transformers~=5.20.1
+
+# Training / evaluation scripts
+scikit-learn~=1.9.1
+matplotlib~=3.11.2
+tqdm~=4.70.1
+gdown~=6.4.2              # IP102 download for src/evaluation/evaluate_pest.py
+
+# Dataset download (src/data/prepare_dataset.py, check_dataset.py) - no token needed
+datasets~=5.1.0
+
+# Tests
+pytest~=9.1.1

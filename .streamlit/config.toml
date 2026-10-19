@@ -1,0 +1,19 @@
+[theme]
+base = "light"
+primaryColor = "#2f7d4f"
+backgroundColor = "#f6f9f3"
+secondaryBackgroundColor = "#e6efe0"
+textColor = "#1f2d24"
+font = "sans serif"
+
+[server]
+# Matches src/config.py MAX_UPLOAD_MB; the app also validates size itself.
+maxUploadSize = 10
+
+[client]
+# Never show stack traces to users; details go to the server console.
+showErrorDetails = "none"
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
