@@ -11,6 +11,10 @@ pandas~=3.0.6
 pillow~=12.3.0
 opencv-python-headless~=5.0.0.93
 
+# HTTP API for the web frontend (api/; python-multipart is also a Streamlit dependency)
+fastapi~=0.148.0
+python-multipart~=0.0.32
+
 # Zero-shot CLIP pest screen (weights fetched once by `python -m src.inference.download_models`)
 transformers~=5.20.1
 
@@ -25,3 +29,4 @@ datasets~=5.1.0
 
 # Tests
 pytest~=9.1.1
+httpx~=0.28.1                # FastAPI TestClient

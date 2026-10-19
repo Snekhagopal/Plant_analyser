@@ -66,6 +66,9 @@ python -m src.evaluation.evaluate_symptoms  # optional: re-measure the symptom c
 # 4. Run the app
 streamlit run app.py
 
+# 4b. Or run the HTTP API (used by the upcoming web frontend); docs at http://localhost:8000/docs
+uvicorn api.main:app --port 8000
+
 # 5. Run the tests
 python -m pytest
 ```
@@ -96,9 +99,13 @@ downloaded at runtime.
 
 ```
 app.py                         Streamlit entry point (layout, session state, caching)
+api/                           FastAPI backend over src/service.py (one analysis at a time)
+  main.py                      endpoints: analyze, meta, history, plants, about, health
+  schemas.py, serialize.py     Pydantic schemas; images as JPEG data URLs
 src/
   config.py                    paths, upload limits, default thresholds
   service.py                   run_full_analysis(): analysis -> recommendations -> Grad-CAM -> history
+  report.py                    four assessments (health, symptoms, pests, disease) for the UIs
   plants/
     catalog.py                 species/classes derived from checkpoint labels; name & alias matching
     conditions.py              reference info for all 38 classes (symptoms, inspection, prevention, escalation)
@@ -314,8 +321,14 @@ bad prediction: on the whitefly photo, 77 % of the weight was on the leaf.
 - The leaf-colour check is a heuristic. Green non-plant objects pass it; red or purple foliage may fail it.
 
 **Recommendations**
-- Advice is generic and conservative. It never names pesticides or fungicides, or gives doses or fertiliser
-  rates.
+- Advice is conservative. **Treatment categories** (e.g. "a fungicide labelled for apple scab on apple",
+  "insecticidal soap or horticultural oil" for soft-bodied insects) appear only for a *likely* disease match, or
+  phrased as "after confirming the cause" for uncertain results, pests, and mildew/rust seen by the symptom check.
+  They always come with a safety block (label, local regulations, registration, protective equipment,
+  pollinators). The app never names brands, never gives doses or rates, and never suggests a product from
+  yellowing or dryness alone; fertiliser is mentioned only as "if a soil test confirms a deficiency".
+- **Whole-plant photos** are accepted, but the disease model was trained on leaf close-ups, so their disease
+  result is shown as *uncertain* at most, with a request for a leaf close-up.
 - **Watering:** a photo cannot show soil moisture. Watering conclusions come only from your questionnaire
   answers and are phrased as possibilities. With no answers, the app says there is not enough information.
 - **Nutrients:** yellowing has many causes. The app explains patterns to check and recommends a soil test; it
@@ -352,7 +365,7 @@ python -m pytest            # whole suite (~1 min)
 Covered: supported/unsupported/missing plant names; invalid, corrupt, truncated and oversized images; real
 checkpoint loading and the class mapping; index→label mapping; valid-image inference; plant-class compatibility;
 confidence-threshold boundaries; OOD, species-mismatch, low-quality and non-plant paths; recommendations for every
-class; no chemical products or doses; watering advice not overstating the photo; SQLite insert/retrieve/delete/
+class; evidence-gated treatment categories with no brands or doses; whole-plant photos never *likely*; API endpoints; watering advice not overstating the photo; SQLite insert/retrieve/delete/
 error handling; Grad-CAM success, failure containment and hook clean-up; end-to-end robustness on odd images
 with the real model; and Streamlit `AppTest` rendering and validation messages. Most tests use a mocked
 predictor; tests that need `models/mobilenet_best.pth` are skipped automatically if it is missing.
