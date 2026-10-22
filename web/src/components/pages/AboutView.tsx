@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import { Chip, pct, plainText } from "@/lib/format";
 import { useApi } from "@/lib/useApi";
-import { Disclaimer, ErrorBanner, GlassCard, PageHeader, Skeleton } from "@/components/ui";
+import { ErrorBanner, GlassCard, PageHeader, Skeleton } from "@/components/ui";
 
 // [step, plain explanation, technical name for the curious]
 const STEPS: [string, string, string][] = [
@@ -129,7 +129,6 @@ export default function AboutView() {
           <li>Symptom and pest checks use OpenAI&apos;s CLIP ViT-L/14, run locally.</li>
         </ul>
       </GlassCard>
-      <div className="mt-6"><Disclaimer /></div>
     </>
   );
 }

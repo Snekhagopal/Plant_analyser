@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { api, type AnalyzeResponse, type PlantGuide, type Section } from "@/lib/api";
 import { Bold, formatDate, pct, plainText, sectionTitle } from "@/lib/format";
-import { CardTitle, Disclaimer, GlassCard, Skeleton } from "@/components/ui";
+import { CardTitle, GlassCard, Skeleton } from "@/components/ui";
 import { AssessmentRow, HeadlineCards, ImagesAndMeaning, StatusBanner } from "./ResultCards";
 
 type Icon = ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
@@ -191,7 +191,6 @@ export default function ResultsDashboard({ result: r, analyzedAt }: { result: An
       <div className="flex min-w-0 flex-col gap-4 lg:col-span-3">
         <FullReport sections={r.recommendations} />
         <ModelDetails r={r} />
-        <Disclaimer />
       </div>
     </div>
   );

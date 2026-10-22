@@ -89,10 +89,6 @@ export default function DiseaseLibraryView() {
           </GlassCard>
           <p className="mb-3 text-sm text-mint-200/65">Showing {shown.length} of {data.length} entries</p>
           <div className="grid gap-4">{shown.map((c) => <ConditionCard key={c.label} c={c} />)}</div>
-          <p className="mt-6 text-xs text-mint-200/55">
-            Short summaries to help you get started. Conditions and allowed treatments differ from place to place, so check
-            with a local plant expert before acting.
-          </p>
         </>
       )}
     </>

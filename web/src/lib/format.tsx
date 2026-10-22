@@ -88,8 +88,6 @@ export const sectionTitle = (s: { key: string; title: string }) => {
  * text is unchanged because the Streamlit app and Python tests share it). Anything else is shown as-is.
  */
 const PLAIN_SENTENCES: Record<string, string> = {
-  "Image-based predictions are not definitive diagnoses. Confirm with a local agricultural extension service, plant clinic or plant pathologist before taking costly or irreversible action.":
-    "A result from a photo is not a confirmed diagnosis. Check with a local plant expert (for example a plant clinic or agricultural advice service) before doing anything costly or that can't be undone.",
   "The model was trained on PlantVillage images (single leaves photographed on plain backgrounds); accuracy on real garden or field photos is unmeasured and likely lower than the reported test accuracy.":
     "The app learned from photos of single leaves on plain backgrounds. We haven't measured how often it is right on everyday garden photos - it is likely to be lower than in our tests.",
   "Confidence scores are temperature-calibrated on validation data, but they are not the probability that the diagnosis is correct for your plant.":

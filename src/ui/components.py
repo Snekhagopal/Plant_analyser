@@ -30,12 +30,6 @@ STATUS_STYLE = {
     Status.INVALID_INPUT: ("bad", "⚠️"),
 }
 
-DISCLAIMER = (
-    "<b>Not a diagnosis.</b> Image-based predictions can be wrong, especially for photos unlike the training "
-    "data. Confirm important findings with a local agricultural extension service, plant clinic or plant "
-    "pathologist before using any chemical treatment."
-)
-
 EXPANDED_SECTIONS = {"actions", "inspect"}
 EXPANDED_TITLE_PREFIXES = ("Pests (detected",)
 
@@ -157,7 +151,6 @@ def render_results(bundle: AnalysisBundle, catalog: PlantCatalog):
         st.warning(f"The result could not be saved to history: {bundle.history_error}")
     elif bundle.history_id:
         st.caption("Saved to history.")
-    st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)
 
 
 STATE_LABELS = {

@@ -123,6 +123,5 @@ test.describe("About", () => {
     const status = page.locator('section[aria-labelledby="status"]');
     await expect(status.getByText("Disease check")).toBeVisible();
     await expect(status.getByText("Working").first()).toBeVisible();
-    await expect(page.getByText("This is not a diagnosis.")).toBeVisible();
   });
 });

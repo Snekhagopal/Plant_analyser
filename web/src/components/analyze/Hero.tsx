@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Bug, Flower2, Leaf, ScanEye, ShieldCheck, Sparkles, Sprout } from "lucide-react";
+import { Bug, Flower2, Leaf, ScanEye, ShieldCheck, Sprout } from "lucide-react";
 import { HERO_IMAGE } from "@/lib/brand";
 
 const FEATURES = [
@@ -35,10 +35,7 @@ export default function Hero() {
       </p>
 
       <div className="max-w-2xl">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-leaf-400/40 bg-leaf-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-leaf-400">
-          <Sparkles className="size-3.5" aria-hidden /> AI Plant Doctor
-        </span>
-        <h1 id="hero-title" className="mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+        <h1 id="hero-title" className="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
           <span className="block bg-gradient-to-r from-white to-mint-200 bg-clip-text text-transparent">Healthy Plants</span>
           <span className="text-gradient block">Happier Days</span>
         </h1>

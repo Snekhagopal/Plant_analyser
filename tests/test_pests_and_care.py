@@ -112,7 +112,6 @@ def test_unsupported_plant_gets_care_guide_not_disease(fake_factory, catalog, th
     rec = build_recommendations(r)
     care = rec.section("care")
     assert care and care.title.startswith("Care guide: Pothos")
-    assert any("not a diagnosis" in i for i in care.items)
     assert rec.section("disease") is None
     assert "care guide" in rec.summary
 

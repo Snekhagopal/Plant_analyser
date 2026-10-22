@@ -29,8 +29,6 @@ CSS = """
 .card .k { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: #5d6f62; }
 .card .v { font-size: 1.15rem; font-weight: 600; color: #1f2d24; margin-top: .15rem; word-wrap: break-word; }
 .card .s { font-size: .82rem; color: #5d6f62; margin-top: .2rem; }
-.disclaimer { font-size: .85rem; color: #4d5c52; background: #fff; border: 1px dashed #b9cbb4;
-              border-radius: 12px; padding: .8rem 1rem; margin-top: 1rem; }
 @media (max-width: 640px) {
   .hero { padding: 1.1rem 1.1rem; }
   .hero h1 { font-size: 1.5rem; }

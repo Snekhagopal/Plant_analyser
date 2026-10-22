@@ -19,8 +19,6 @@ from src.recommendations.symptoms import SYMPTOM_ADVICE
 from src.recommendations.treatments import treatment_advice
 
 GENERAL_LIMITATIONS = [
-    "Image-based predictions are not definitive diagnoses. Confirm with a local agricultural extension "
-    "service, plant clinic or plant pathologist before taking costly or irreversible action.",
     "The model was trained on PlantVillage images (single leaves photographed on plain backgrounds); accuracy "
     "on real garden or field photos is unmeasured and likely lower than the reported test accuracy.",
     "Confidence scores are temperature-calibrated on validation data, but they are not the probability that "
@@ -247,8 +245,7 @@ def care_items(profile: PlantProfile) -> list[str]:
     care = profile.care
     items = [profile.note] if profile.note else []
     items += [f"Watering: {care.watering}", f"Light: {care.light}",
-              f"Common pests to check for: {care.pests}", f"Common problems: {care.problems}",
-              "This is general guidance for this type of plant, not a diagnosis from your photo."]
+              f"Common pests to check for: {care.pests}", f"Common problems: {care.problems}"]
     return items
 
 

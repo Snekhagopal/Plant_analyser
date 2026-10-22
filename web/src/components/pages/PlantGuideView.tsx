@@ -36,7 +36,6 @@ function Guide({ name }: { name: string }) {
           ))}
         </div>
       )}
-      {care && <p className="mt-3 text-xs text-mint-200/55">General advice for this type of plant - not a diagnosis.</p>}
       {data.coverage_warning && (
         <p className="mt-4 flex gap-2 rounded-xl bg-amber-400/10 p-3 text-sm text-amber-100/90">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />{data.coverage_warning}

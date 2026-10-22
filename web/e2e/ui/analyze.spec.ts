@@ -14,7 +14,6 @@ test.describe("Analyze page", () => {
   test("hero banner renders with the healthy-plant photo", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1, name: /Healthy Plants\s*Happier Days/ })).toBeVisible();
-    await expect(page.getByText("AI Plant Doctor")).toBeVisible();
     const hero = page.locator('section[aria-labelledby="hero-title"] img').first();
     await expect(hero).toHaveAttribute("src", /hero\.jpg/);
     await expect.poll(() => hero.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth)).toBeGreaterThan(0);
